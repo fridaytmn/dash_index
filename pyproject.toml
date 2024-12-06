@@ -85,11 +85,6 @@ pytest = "8.1.1"
 mock = "5.1.0"
 sqlparse = "0.4.4"
 
-[[tool.poetry.source]]
-name = "devpi"
-url = "https://devpi.sima-land.ru/root/pypi/+simple/"
-priority = "primary"
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
