@@ -4,6 +4,7 @@ from dash.dash_table.Format import Format, Symbol
 from utils.table_wrapper import THUMBNAIL_COLUMN_NAME
 from dataclasses import dataclass
 from urllib.parse import quote
+from dash import html
 
 MARKDOWN_COLUMN_REQUEST = "Запрос"
 MARKDOWN_COLUMN_DETAILS = "Подробнее"

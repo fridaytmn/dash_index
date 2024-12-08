@@ -8,7 +8,7 @@ import pandas as pd
 from app import app
 import utils.user
 
-label = "Список заявок"
+label = "Список всех заявок"
 
 note = """
 В отчете отображается список заявок для менеджера.
@@ -48,7 +48,6 @@ def update(
     # column_changes = {"id": "id", "name": "Департамент"}
     # data.rename(columns=column_changes, inplace=True)
     return get_table(data)
-
 
 @table_wrapper()
 def get_table(data: pd.DataFrame) -> dash_table.DataTable:
