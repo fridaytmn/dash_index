@@ -7,3 +7,10 @@ def get_orders():
     return """SELECT
     *
     FROM public.orders"""
+
+
+@query(connector)
+def get_buyers():
+    return """SELECT
+    *
+    FROM public.buyer"""
