@@ -5,9 +5,11 @@ USERS = {
     "admin": {
         "password": "admin123",
         "ROLE": "ADMIN",
+        "GROUPS": ["ADMIN"]
     },
     "user": {
         "password": "user123",
         "ROLE": "USER",
+        "GROUPS": ["MANAGER"]
     },
 }

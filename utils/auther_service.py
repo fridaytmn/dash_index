@@ -25,6 +25,7 @@ class AutherError(Exception):
 class Identity:
     username: str
     roles: set
+    groups: set
 
 
 class AutherService:
@@ -33,13 +34,12 @@ class AutherService:
     def get_identity(cls, username: str, password: str) -> Identity:
         if username not in USERS or USERS[username]["password"] != password:
             raise AutherError("Ошибка входа", "Неправильный логин или пароль")
-        role = USERS[username]["ROLE"]
-        return Identity(username=username, roles={role})
+        role, groups = USERS[username]["ROLE"], USERS[username]["GROUPS"]
+        return Identity(username=username, roles={role}, groups={*groups})
 
     @classmethod
     def check(cls, user) -> bool:
         if user.username in USERS:
             if user.roles[0] == USERS[user.username]["ROLE"]:
                 return True
-        print(user)  # noqa
         return False
