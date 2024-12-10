@@ -14,3 +14,10 @@ def get_buyers():
     return """SELECT
     *
     FROM public.buyer"""
+
+
+@query(connector)
+def get_sellers():
+    return """SELECT
+    *
+    FROM public.sellers"""

@@ -1,4 +1,4 @@
-import commands.order.save_order
+import commands.orders.save_order
 import queries.orders.general
 import templates.flash
 from utils.table_wrapper import table_wrapper
