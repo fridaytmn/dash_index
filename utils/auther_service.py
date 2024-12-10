@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from user_log_pass import USERS
 
+
 class AutherError(Exception):
     """Exception raised for errors in Auth.
 

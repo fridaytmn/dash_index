@@ -14,6 +14,7 @@ note = """
 В отчете отображается список заявок для менеджера.
 """
 
+
 def get_content() -> list:
     return [
         html.Div(
@@ -45,9 +46,9 @@ def update(
 ):
     data = get_orders()
     data["id"] = data.index + 1
-    # column_changes = {"id": "id", "name": "Департамент"}
-    # data.rename(columns=column_changes, inplace=True)
+
     return get_table(data)
+
 
 @table_wrapper()
 def get_table(data: pd.DataFrame) -> dash_table.DataTable:

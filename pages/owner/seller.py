@@ -1,3 +1,5 @@
+import logging
+
 from queries.orders.owner import get_sellers
 from commands.orders.owner import create_new_seller
 from utils.table_wrapper import table_wrapper
@@ -115,21 +117,20 @@ def get_content() -> list:
     State(component_id="seller_phone_number", component_property="value"),
     prevent_initial_call=True,
 )
-def update_create_seller(
-    _, seller_naming, seller_inn, seller_email, seller_phone_number
-):
+def update_create_seller(_, seller_naming, seller_inn, seller_email, seller_phone_number):
     if "" in {seller_naming, seller_inn}:
         return templates.flash.render("", "Необходимо заполнить 'Название' и 'ИНН'")
 
     try:
         create_new_seller(seller_naming, seller_inn, seller_email, seller_phone_number)
     except Exception as error:
-        print(error)
+        logging.info(error)
         return templates.flash.render("", "Произошла ошибка при добавлении поставщика")
     return [
         html.Br(),
         dbc.Alert(f"Поставщик {seller_naming} был добавлен", color="warning"),
     ]
+
 
 @app.callback(
     Output(component_id="all_seller", component_property="children"),
@@ -140,12 +141,13 @@ def update_all_seller(_):
 
     data = get_sellers()
 
-    column_changes = {"seller_id": "№",
-                      "seller_name": "Наименование",
-                      "seller_inn": "ИНН",
-                      "email": "Почта",
-                      "phone_number": "Контактный телефон",
-                      }
+    column_changes = {
+        "seller_id": "№",
+        "seller_name": "Наименование",
+        "seller_inn": "ИНН",
+        "email": "Почта",
+        "phone_number": "Контактный телефон",
+    }
 
     data.rename(columns=column_changes, inplace=True)
 

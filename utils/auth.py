@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from user_log_pass import JWT_ALGORITHM, JWT_SECRET
 
 
-DATETIME_2_MONTHS =  60 * 24 * 60 * 60 * 1000
+DATETIME_2_MONTHS = 60 * 24 * 60 * 60 * 1000
 
 auther_services = AutherService()
 

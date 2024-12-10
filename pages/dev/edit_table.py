@@ -1,4 +1,3 @@
-from queries.orders.owner import get_orders
 from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
@@ -12,6 +11,7 @@ label = "Редактируемая таблица"
 note = """
 В отчете отображается список заявок для менеджера.
 """
+
 
 def get_content() -> list:
     return [
@@ -55,6 +55,7 @@ def update(_):
         dbc.Button(id="add-btn", n_clicks=0, children="Добавить строку"),
     ]
 
+
 @app.callback(
     Output("notification_settings_tabs_content", "children"),
     Input("add-btn", "n_clicks"),
@@ -81,6 +82,7 @@ def add_row(button, data) -> list:
         get_table(data_added_row),
     ]
 
+
 def get_data():
 
     product_data = {
@@ -88,12 +90,11 @@ def get_data():
         "price": [3.75, 1.65, 1.55, 3.60, 3.00, 3.97],
         "unit": ["kg", "kg", "l", "dz", "ea", "pkg"],
     }
-    new_order_line = {"product": "", "price": 0, "unit": "", "quantity": 0, "total": 0}
 
     df_product = pd.DataFrame(product_data)
-    df_new_order_line = pd.DataFrame(new_order_line, index=[0])
 
     return df_product
+
 
 @table_wrapper()
 def get_table(data: pd.DataFrame) -> dash_table.DataTable:

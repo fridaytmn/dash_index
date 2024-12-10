@@ -3,8 +3,6 @@ import pandas as pd
 from dash.dash_table.Format import Format, Symbol
 from utils.table_wrapper import THUMBNAIL_COLUMN_NAME
 from dataclasses import dataclass
-from urllib.parse import quote
-from dash import html
 
 MARKDOWN_COLUMN_REQUEST = "Запрос"
 MARKDOWN_COLUMN_DETAILS = "Подробнее"
@@ -83,7 +81,6 @@ def generate(
         column_names = dataframe.columns
     if columns_with_suffix is None:
         columns_with_suffix = []
-    generate_url(dataframe)
     dtypes = dict(dataframe.dtypes)
     columns = [
         TableColumn(
@@ -101,13 +98,6 @@ def generate(
         generate_columns(columns),
         generate_columns_styles(columns),
     )
-
-
-def generate_url(dataframe: pd.DataFrame):
-    for column in dataframe:
-        if column == MARKDOWN_COLUMN_REQUEST:
-            dataframe[column] = dataframe[column].apply(lambda x: f"""[{str(x).strip()}]({BASE_URL + quote(str(x))})""")
-    return dataframe
 
 
 def generate_columns(columns: List[TableColumn]) -> List:

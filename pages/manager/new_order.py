@@ -9,12 +9,14 @@ import utils.table_format
 import pandas as pd
 from app import app
 import utils.user
+import logging
 
 label = "Регистрация новой заявки"
 
 note = """
 Тут можно создать новую заявку.
 """
+
 
 def get_content() -> list:
     return [
@@ -126,6 +128,7 @@ def get_content() -> list:
         html.Div(id="save_new_order_from_manager"),
     ]
 
+
 @app.callback(
     Output(component_id="save_new_order_from_manager", component_property="children"),
     Input("manager_save_new_order", "n_clicks"),
@@ -138,21 +141,18 @@ def get_content() -> list:
     State(component_id="manager_buyer_new_order", component_property="value"),
     prevent_initial_call=True,
 )
-def update(
-        _, article, product_name, brand, quanity_ordered, quantity, unit, buyer
-):
+def update(_, article, product_name, brand, quanity_ordered, quantity, unit, buyer):
     if "" in {article, product_name, brand, quanity_ordered, quantity, unit, buyer}:
-        print("NULL")
         return templates.flash.render("", "Необходимо заполнить все поля")
     number_id = queries.orders.general.get_last_number_order()
-    print(number_id)
     try:
         commands.order.save_order.create_new_order(article, product_name, brand, quanity_ordered, quantity, unit, buyer)
-    except Exception as e:
-        print("ERROR", e)
+    except Exception as error:
+        logging.info(error)
+        return templates.flash.render("", "Что-то пошло не по плану")
 
     product_data = {
-        "id": [number_id['id'][0]],
+        "id": [number_id["id"][0]],
         "article": [article],
         "name": [product_name],
         "brand": [brand],
@@ -162,10 +162,10 @@ def update(
         "buyer": [buyer],
     }
 
-    print(number_id, article, product_name, brand, quanity_ordered, quantity, unit, buyer)
     data = pd.DataFrame(product_data)
 
     return get_table(data)
+
 
 @table_wrapper()
 def get_table(data: pd.DataFrame) -> dash_table.DataTable:

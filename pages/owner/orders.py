@@ -47,8 +47,7 @@ def update(
 ):
     data = get_orders()
     data["id"] = data.index + 1
-    # column_changes = {"username": "Логин", "name": "ФИО"}
-    # data.rename(columns=column_changes, inplace=True)
+
     return get_table(data)
 
 
