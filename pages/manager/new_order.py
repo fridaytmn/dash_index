@@ -1,10 +1,11 @@
-import commands.orders.save_order
+from commands.orders import save_order, owner
 import queries.orders.general
 import templates.flash
 from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-from dash import html, dash_table
+from dash import html, dash_table, dcc
+from queries.orders.owner import get_buyers
 import utils.table_format
 import pandas as pd
 from app import app
@@ -104,10 +105,18 @@ def get_content() -> list:
                     ),
                     dbc.Col(
                         [
-                            html.Label("Покупатель", style={}),
-                            dbc.Input(
+                            html.Label("Заказчик", style={}),
+                            dcc.Dropdown(
                                 id="manager_buyer_new_order",
-                                type="text",
+                                options=[
+                                    {
+                                        "label": f'{row["buyer_name"]} {row["buyer_inn"]}',
+                                        "value": row["buyer_id"]}
+                                    for index, row in get_buyers().iterrows()
+                                ],
+                                searchable=True,
+                                placeholder="Заказчик",
+                                style={"min-width": "320px", "min-height": "40px"},
                                 value="",
                             ),
                         ],
@@ -144,15 +153,17 @@ def get_content() -> list:
 def update(_, article, product_name, brand, quanity_ordered, quantity, unit, buyer):
     if "" in {article, product_name, brand, quanity_ordered, quantity, unit, buyer}:
         return templates.flash.render("", "Необходимо заполнить все поля")
-    number_id = queries.orders.general.get_last_number_order()
+    order_id = queries.orders.general.get_last_number_order()
     try:
-        commands.order.save_order.create_new_order(article, product_name, brand, quanity_ordered, quantity, unit, buyer)
+        save_order.create_new_order(article, product_name, brand, quanity_ordered, quantity, unit, buyer)
+        owner.insert_new_order(order_id["id"][0])
     except Exception as error:
         logging.info(error)
+        print(error)
         return templates.flash.render("", "Что-то пошло не по плану")
 
     product_data = {
-        "id": [number_id["id"][0]],
+        "id": [order_id["id"][0]],
         "article": [article],
         "name": [product_name],
         "brand": [brand],
