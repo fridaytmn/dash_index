@@ -118,14 +118,14 @@ def get_content() -> list:
 def update_create_seller(
     _, seller_naming, seller_inn, seller_email, seller_phone_number
 ):
-    if None in {seller_naming, seller_inn}:
+    if "" in {seller_naming, seller_inn}:
         return templates.flash.render("", "Необходимо заполнить 'Название' и 'ИНН'")
 
     try:
         create_new_seller(seller_naming, seller_inn, seller_email, seller_phone_number)
     except Exception as error:
         print(error)
-
+        return templates.flash.render("", "Произошла ошибка при добавлении поставщика")
     return [
         html.Br(),
         dbc.Alert(f"Поставщик {seller_naming} был добавлен", color="warning"),

@@ -118,13 +118,14 @@ def get_content() -> list:
 def update_create_buyer(
     _, buyer_naming, buyer_inn, buyer_email, buyer_phone_number
 ):
-    if None in {buyer_naming, buyer_inn}:
+    if "" in {buyer_naming, buyer_inn}:
         return templates.flash.render("", "Необходимо заполнить 'Название' и 'ИНН'")
 
     try:
         create_new_buyer(buyer_naming, buyer_inn, buyer_email, buyer_phone_number)
     except Exception as error:
         print(error)
+        return templates.flash.render("", "Произошла ошибка при добавлении заказчика")
 
     return [
         html.Br(),
