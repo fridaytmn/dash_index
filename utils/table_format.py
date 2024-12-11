@@ -3,9 +3,10 @@ import pandas as pd
 from dash.dash_table.Format import Format, Symbol
 from utils.table_wrapper import THUMBNAIL_COLUMN_NAME
 from dataclasses import dataclass
+from queries.orders.files import get_invoice_url
 
-MARKDOWN_COLUMN_REQUEST = "Запрос"
-MARKDOWN_COLUMN_DETAILS = "Подробнее"
+MARKDOWN_COLUMN_INVOICE = "invoice"
+MARKDOWN_COLUMN_INVOICE_FACTURE = "Счет-фактура"
 
 
 @dataclass
@@ -82,13 +83,14 @@ def generate(
     if columns_with_suffix is None:
         columns_with_suffix = []
     dtypes = dict(dataframe.dtypes)
+    generate_url(dataframe)
     columns = [
         TableColumn(
             name=column_name,
             type=str(dtypes[column_name]) if column_name in dtypes else "object",
             suffix=columns_suffix if column_name in columns_with_suffix else "",
             group_delimiter=group_delimiter,
-            is_markdown=column_name in {MARKDOWN_COLUMN_REQUEST, THUMBNAIL_COLUMN_NAME, MARKDOWN_COLUMN_DETAILS},
+            is_markdown=column_name in {MARKDOWN_COLUMN_INVOICE, THUMBNAIL_COLUMN_NAME, MARKDOWN_COLUMN_INVOICE_FACTURE},
             is_thumbnail=column_name == THUMBNAIL_COLUMN_NAME,
         )
         for column_name in column_names
@@ -102,6 +104,14 @@ def generate(
 
 def generate_columns(columns: List[TableColumn]) -> List:
     return list(map(generate_column, columns))
+
+
+def generate_url(dataframe: pd.DataFrame):
+    for column in dataframe:
+        if column == MARKDOWN_COLUMN_INVOICE:
+            dataframe[column] = dataframe.apply(
+                lambda x: f"""["Счет-Фактура"]({get_invoice_url(x.id)["Счет"][0]})""" if x.invoice else "", axis=1)
+    return dataframe
 
 
 def generate_columns_styles(columns: List[TableColumn]) -> List:

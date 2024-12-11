@@ -76,6 +76,8 @@ flask = "3.0.3"
 gql = {extras = ["all"], version = "3.5.0"}
 python-gitlab = "5.0.0"
 pytest = "8.1.1"
+minio = "^7.2.12"
+boto3 = "^1.35.78"
 
 [tool.poetry.group.dev.dependencies]
 black = "24.3.0"

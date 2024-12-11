@@ -4,7 +4,8 @@ from queries.orders import connector
 
 @query(connector)
 def get_orders():
-    return """SELECT
+    return f"""SELECT
+    id,
     article,
     product_name,
     product_naming,
@@ -12,5 +13,8 @@ def get_orders():
     quantity_ordered,
     quantity,
     unit,
-    buyer
-    FROM public.orders"""
+    buyer,
+    invoice
+    FROM public.orders
+    ORDER BY id
+"""

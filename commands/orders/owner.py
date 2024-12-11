@@ -17,8 +17,8 @@ def create_new_seller(seller_name: str, seller_inn: str, email=None, phone_numbe
     VALUES ('{seller_name}', '{seller_inn}', '{email}', '{phone_number}')
 """
 
+
 @command(connector)
 def insert_new_order(order_id: int) -> str:
     """Перенос новой заявки в таблицу Owner"""
     return f"""INSERT INTO public.owner_orders (order_id) VALUES ({order_id})"""
-

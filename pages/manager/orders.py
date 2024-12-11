@@ -2,7 +2,7 @@ from queries.orders.manager import get_orders
 from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
-from dash import html, dash_table
+from dash import html, dash_table, dcc
 import utils.table_format
 import pandas as pd
 from app import app
@@ -45,7 +45,6 @@ def update(
     _,
 ):
     data = get_orders()
-    data["id"] = data.index + 1
 
     return get_table(data)
 
@@ -61,4 +60,5 @@ def get_table(data: pd.DataFrame) -> dash_table.DataTable:
         sort_action="custom",
         sort_by=[],
         data=data.to_dict("records"),
+        editable=True,
     )
