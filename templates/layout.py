@@ -34,7 +34,7 @@ def render(content, user: User | None = None):
                                 dcc.Link(
                                     html.Img(
                                         src=f"data:image/svg+xml;base64,{LOGO_IMAGE}",
-                                        height="32px",
+                                        height="52px",
                                         className="logo",
                                     ),
                                     href="/",

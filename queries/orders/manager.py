@@ -5,16 +5,19 @@ from queries.orders import connector
 @query(connector)
 def get_orders():
     return f"""SELECT
-    id,
-    article,
-    product_name,
-    product_naming,
-    brand,
-    quantity_ordered,
-    quantity,
-    unit,
-    buyer,
-    invoice
-    FROM public.orders
-    ORDER BY id
+    po.id,
+    po.article,
+    po.product_name,
+    po.product_naming,
+    po.brand,
+    po.quantity_ordered,
+    po.quantity,
+    po.unit,
+    po.buyer,
+    pf.invoice_filename as invoice,
+    pf.invoice_faktura_filename as invoice_faktura
+    FROM public.orders po
+    LEFT OUTER JOIN public.files pf
+    ON po.id = pf.order_id
+    ORDER BY po.id
 """

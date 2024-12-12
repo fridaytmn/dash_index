@@ -108,13 +108,17 @@ def generate_columns(columns: List[TableColumn]) -> List:
 
 def generate_url(dataframe: pd.DataFrame):
     for column in dataframe:
-        if column == MARKDOWN_COLUMN_INVOICE:
-            dataframe[column] = dataframe.apply(
-                lambda x: f"""["Счет"]({get_invoice_url(x.id)["Счет"][0]})""" if x.invoice else "", axis=1)
-        elif column == MARKDOWN_COLUMN_INVOICE_FACTURE:
-            dataframe[column] = dataframe.apply(
-                lambda x: f"""["Счет-Фактура"]({get_invoice_url(x.id)["Счет"][0]})""" if x.invoice else "", axis=1)
+        if column == MARKDOWN_COLUMN_INVOICE and not dataframe[column].empty:
+            generate_url_for_files(dataframe, column)
+        # if column == MARKDOWN_COLUMN_INVOICE_FACTURE:
+        #     generate_url_for_files(dataframe, column)
     return dataframe
+
+
+def generate_url_for_files(dataframe: pd.DataFrame, column: str):
+    if not dataframe[column].empty:
+        dataframe[column] = dataframe.apply(
+            lambda x: f"""["Счет"]({get_invoice_url(x.id)["Счет"][0]})""" if x.invoice else "", axis=1)
 
 
 def generate_columns_styles(columns: List[TableColumn]) -> List:
