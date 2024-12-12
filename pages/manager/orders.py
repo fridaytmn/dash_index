@@ -56,7 +56,7 @@ def get_table(data: pd.DataFrame) -> dash_table.DataTable:
         id="manager_orders_table",
         columns=columns,
         style_cell_conditional=styles,
-        page_size=50,
+        page_size=100,
         sort_action="custom",
         sort_by=[],
         data=data.to_dict("records"),

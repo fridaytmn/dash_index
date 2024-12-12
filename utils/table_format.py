@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from queries.orders.files import get_invoice_url
 
 MARKDOWN_COLUMN_INVOICE = "invoice"
-MARKDOWN_COLUMN_INVOICE_FACTURE = "Счет-фактура"
+MARKDOWN_COLUMN_INVOICE_FACTURE = "invoice_facture"
 
 
 @dataclass
@@ -109,6 +109,9 @@ def generate_columns(columns: List[TableColumn]) -> List:
 def generate_url(dataframe: pd.DataFrame):
     for column in dataframe:
         if column == MARKDOWN_COLUMN_INVOICE:
+            dataframe[column] = dataframe.apply(
+                lambda x: f"""["Счет"]({get_invoice_url(x.id)["Счет"][0]})""" if x.invoice else "", axis=1)
+        elif column == MARKDOWN_COLUMN_INVOICE_FACTURE:
             dataframe[column] = dataframe.apply(
                 lambda x: f"""["Счет-Фактура"]({get_invoice_url(x.id)["Счет"][0]})""" if x.invoice else "", axis=1)
     return dataframe
