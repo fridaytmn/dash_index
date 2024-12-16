@@ -109,7 +109,10 @@ def get_content() -> list:
                             dcc.Dropdown(
                                 id="manager_buyer_new_order",
                                 options=[
-                                    {"label": f'{row["buyer_name"]} {row["buyer_inn"]}', "value": row["buyer_id"]}
+                                    {
+                                        "label": f'{row["buyer_name"]} {row["buyer_inn"]}',
+                                        "value": row["buyer_name"] + " " + row["buyer_inn"]
+                                    }
                                     for index, row in get_buyers().iterrows()
                                 ],
                                 searchable=True,

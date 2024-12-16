@@ -56,9 +56,7 @@ def upload_to_s3(contents, filename):
 
             # Генерация ссылки на скачивание (постоянная или временная)
             file_url = s3_client.generate_presigned_url(
-                "get_object",
-                Params={"Bucket": BUCKET_NAME, "Key": filename},
-                ExpiresIn=2678400
+                "get_object", Params={"Bucket": BUCKET_NAME, "Key": filename}, ExpiresIn=2678400
             )
 
             # Сохранение в базу данных
