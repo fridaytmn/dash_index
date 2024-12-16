@@ -8,6 +8,7 @@ import utils.table_format
 import templates.flash
 import pandas as pd
 from app import app
+import logging
 
 label = "Заказчики"
 
@@ -115,22 +116,21 @@ def get_content() -> list:
     State(component_id="buyer_phone_number", component_property="value"),
     prevent_initial_call=True,
 )
-def update_create_buyer(
-    _, buyer_naming, buyer_inn, buyer_email, buyer_phone_number
-):
+def update_create_buyer(_, buyer_naming, buyer_inn, buyer_email, buyer_phone_number):
     if "" in {buyer_naming, buyer_inn}:
         return templates.flash.render("", "Необходимо заполнить 'Название' и 'ИНН'")
 
     try:
         create_new_buyer(buyer_naming, buyer_inn, buyer_email, buyer_phone_number)
     except Exception as error:
-        print(error)
+        logging.info(error)
         return templates.flash.render("", "Произошла ошибка при добавлении заказчика")
 
     return [
         html.Br(),
         dbc.Alert(f"Заказчик {buyer_naming} был добавлен", color="warning"),
     ]
+
 
 @app.callback(
     Output(component_id="all_buyer", component_property="children"),
@@ -141,16 +141,18 @@ def update_all_buyer(_):
 
     data = get_buyers()
 
-    column_changes = {"buyer_id": "№",
-                      "buyer_name": "Наименование",
-                      "buyer_inn": "ИНН",
-                      "email": "Почта",
-                      "phone_number": "Контактный телефон",
-                      }
+    column_changes = {
+        "buyer_id": "№",
+        "buyer_name": "Наименование",
+        "buyer_inn": "ИНН",
+        "email": "Почта",
+        "phone_number": "Контактный телефон",
+    }
 
     data.rename(columns=column_changes, inplace=True)
 
     return get_table(data)
+
 
 @table_wrapper()
 def get_table(data: pd.DataFrame) -> dash_table.DataTable:

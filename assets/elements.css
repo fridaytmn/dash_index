@@ -67,8 +67,8 @@ input::placeholder {
 .table-wrapper .dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner td {
   border: 1px solid #E0E0E0 !important;
   font-family:  -apple-system,BlinkMacSystemFont,'SF Pro','Source Sans Pro',"Segoe UI",Roboto,"Helvetica Neue",Ubuntu;
-  font-size: 16px;
-  padding: 16px 8px;
+  font-size: 12px;
+  padding: 12px 4px;
 }
 
 button.export,
@@ -147,9 +147,9 @@ button.export:hover {
   border-radius: 4px;
   color: #212121;
   font-family: -apple-system,BlinkMacSystemFont,'SF Pro','Source Sans Pro',"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,Arial,sans-serif;
-  font-size: 14px;
-  line-height: 36px;
-  height: 40px;
+  font-size: 12px;
+  line-height: 16px;
+  height: 30px;
   min-width: 40px !important;
 }
 

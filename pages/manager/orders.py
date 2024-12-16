@@ -2,7 +2,7 @@ from queries.orders.manager import get_orders
 from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
-from dash import html, dash_table
+from dash import html, dash_table, dcc
 import utils.table_format
 import pandas as pd
 from app import app
@@ -13,6 +13,7 @@ label = "Список всех заявок"
 note = """
 В отчете отображается список заявок для менеджера.
 """
+
 
 def get_content() -> list:
     return [
@@ -44,10 +45,9 @@ def update(
     _,
 ):
     data = get_orders()
-    data["id"] = data.index + 1
-    # column_changes = {"id": "id", "name": "Департамент"}
-    # data.rename(columns=column_changes, inplace=True)
+
     return get_table(data)
+
 
 @table_wrapper()
 def get_table(data: pd.DataFrame) -> dash_table.DataTable:
@@ -56,8 +56,9 @@ def get_table(data: pd.DataFrame) -> dash_table.DataTable:
         id="manager_orders_table",
         columns=columns,
         style_cell_conditional=styles,
-        page_size=50,
+        page_size=100,
         sort_action="custom",
         sort_by=[],
         data=data.to_dict("records"),
+        editable=True,
     )

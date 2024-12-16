@@ -3,11 +3,10 @@ import pandas as pd
 from dash.dash_table.Format import Format, Symbol
 from utils.table_wrapper import THUMBNAIL_COLUMN_NAME
 from dataclasses import dataclass
-from urllib.parse import quote
-from dash import html
+from queries.orders.files import get_invoice_url
 
-MARKDOWN_COLUMN_REQUEST = "Запрос"
-MARKDOWN_COLUMN_DETAILS = "Подробнее"
+MARKDOWN_COLUMN_INVOICE = "invoice"
+MARKDOWN_COLUMN_INVOICE_FACTURE = "invoice_facture"
 
 
 @dataclass
@@ -83,15 +82,15 @@ def generate(
         column_names = dataframe.columns
     if columns_with_suffix is None:
         columns_with_suffix = []
-    generate_url(dataframe)
     dtypes = dict(dataframe.dtypes)
+    generate_url(dataframe)
     columns = [
         TableColumn(
             name=column_name,
             type=str(dtypes[column_name]) if column_name in dtypes else "object",
             suffix=columns_suffix if column_name in columns_with_suffix else "",
             group_delimiter=group_delimiter,
-            is_markdown=column_name in {MARKDOWN_COLUMN_REQUEST, THUMBNAIL_COLUMN_NAME, MARKDOWN_COLUMN_DETAILS},
+            is_markdown=column_name in {MARKDOWN_COLUMN_INVOICE, THUMBNAIL_COLUMN_NAME, MARKDOWN_COLUMN_INVOICE_FACTURE},
             is_thumbnail=column_name == THUMBNAIL_COLUMN_NAME,
         )
         for column_name in column_names
@@ -103,15 +102,23 @@ def generate(
     )
 
 
+def generate_columns(columns: List[TableColumn]) -> List:
+    return list(map(generate_column, columns))
+
+
 def generate_url(dataframe: pd.DataFrame):
     for column in dataframe:
-        if column == MARKDOWN_COLUMN_REQUEST:
-            dataframe[column] = dataframe[column].apply(lambda x: f"""[{str(x).strip()}]({BASE_URL + quote(str(x))})""")
+        if column == MARKDOWN_COLUMN_INVOICE and not dataframe[column].empty:
+            generate_url_for_files(dataframe, column)
+        # if column == MARKDOWN_COLUMN_INVOICE_FACTURE:
+        #     generate_url_for_files(dataframe, column)
     return dataframe
 
 
-def generate_columns(columns: List[TableColumn]) -> List:
-    return list(map(generate_column, columns))
+def generate_url_for_files(dataframe: pd.DataFrame, column: str):
+    if not dataframe[column].empty:
+        dataframe[column] = dataframe.apply(
+            lambda x: f"""["Счет"]({get_invoice_url(x.id)["Счет"][0]})""" if x.invoice else "", axis=1)
 
 
 def generate_columns_styles(columns: List[TableColumn]) -> List:

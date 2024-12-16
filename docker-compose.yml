@@ -12,6 +12,32 @@ services:
 #    volumes:
 #      - ./pgdata:/var/lib/postgresql/data/pgdata
     network_mode: bridge
+  minio:
+    container_name: minio
+    image: minio/minio:RELEASE.2021-10-13T00-23-17Z
+    volumes:
+      - minio:/data
+    ports:
+      - 9000:9000
+      - 9001:9001
+    network_mode: bridge
+    environment:
+      MINIO_ACCESS_KEY: root
+      MINIO_SECRET_KEY: root12345
+    entrypoint: >
+      /bin/sh -c '
+        isAlive() { curl -sf http://127.0.0.1:9000/minio/health/live; }    # check if Minio is alive
+        minio $0 "$@" --quiet & echo $! > /tmp/minio.pid                   # start Minio in the background
+        while ! isAlive; do sleep 0.1; done                                # wait until Minio is alive
+        mc alias set minio http://127.0.0.1:9000 proba proba12345          # setup Minio client
+        mc mb minio/mobile-data|| true                                     # create a test bucket
+        mc anonymous set public minio/mobile-data                          # make the test bucket public
+        kill -s INT $(cat /tmp/minio.pid) && rm /tmp/minio.pid             # stop Minio
+        while isAlive; do sleep 0.1; done                                  # wait until Minio is stopped
+        exec minio $0 "$@"                                                 # start Minio in the foreground
+      '
+    command: server /data --console-address ":9001"
 volumes:
+  minio:
   data:
     driver: local
