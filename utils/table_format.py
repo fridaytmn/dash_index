@@ -90,7 +90,8 @@ def generate(
             type=str(dtypes[column_name]) if column_name in dtypes else "object",
             suffix=columns_suffix if column_name in columns_with_suffix else "",
             group_delimiter=group_delimiter,
-            is_markdown=column_name in {MARKDOWN_COLUMN_INVOICE, THUMBNAIL_COLUMN_NAME, MARKDOWN_COLUMN_INVOICE_FACTURE},
+            is_markdown=column_name
+            in {MARKDOWN_COLUMN_INVOICE, THUMBNAIL_COLUMN_NAME, MARKDOWN_COLUMN_INVOICE_FACTURE},
             is_thumbnail=column_name == THUMBNAIL_COLUMN_NAME,
         )
         for column_name in column_names
@@ -118,7 +119,8 @@ def generate_url(dataframe: pd.DataFrame):
 def generate_url_for_files(dataframe: pd.DataFrame, column: str):
     if not dataframe[column].empty:
         dataframe[column] = dataframe.apply(
-            lambda x: f"""["Счет"]({get_invoice_url(x.id)["Счет"][0]})""" if x.invoice else "", axis=1)
+            lambda x: f"""["Счет"]({get_invoice_url(x.id)["Счет"][0]})""" if x.invoice else "", axis=1
+        )
 
 
 def generate_columns_styles(columns: List[TableColumn]) -> List:

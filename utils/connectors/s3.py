@@ -9,5 +9,8 @@ BUCKET_NAME = os.environ.get("MINIO_ENDPOINT_URL", "mobile-apps")
 
 # Подключение к MinIO через boto3
 s3_client = boto3.client(
-    "s3", endpoint_url=MINIO_ENDPOINT, aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY,
+    "s3",
+    endpoint_url=MINIO_ENDPOINT,
+    aws_access_key_id=ACCESS_KEY,
+    aws_secret_access_key=SECRET_KEY,
 )

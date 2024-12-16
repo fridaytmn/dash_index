@@ -1,12 +1,14 @@
-from queries.orders.manager import get_orders
+from queries.orders.manager import get_orders, get_orders_by_buyer
+from queries.orders.owner import get_buyers
 from utils.table_wrapper import table_wrapper
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash import html, dash_table, dcc
 import utils.table_format
 import pandas as pd
 from app import app
 import utils.user
+from pages import OPTION_ALL
 
 label = "Список всех заявок"
 
@@ -20,6 +22,26 @@ def get_content() -> list:
         html.Div(
             dbc.Row(
                 [
+                    dbc.Col(
+                        [
+                            html.Label("Заказчик", style={}),
+                            dcc.Dropdown(
+                                id="manager_buyer_orders",
+                                options=[
+                                    {
+                                        "label": f'{row["buyer_name"]} {row["buyer_inn"]}',
+                                        "value": row["buyer_name"] + " " + row["buyer_inn"]
+                                    }
+                                    for index, row in get_buyers().iterrows()
+                                ],
+                                searchable=True,
+                                placeholder=OPTION_ALL,
+                                style={"min-width": "320px", "min-height": "40px"},
+                                value=OPTION_ALL,
+                            ),
+                        ],
+                        width=3,
+                    ),
                     dbc.Col(
                         dbc.Button(
                             id="get_manager_orders",
@@ -39,14 +61,15 @@ def get_content() -> list:
 @app.callback(
     Output(component_id="manager_orders", component_property="children"),
     Input("get_manager_orders", "n_clicks"),
+    State(component_id="manager_buyer_orders", component_property="value"),
     prevent_initial_call=True,
 )
 def update(
-    _,
+    _, buyer
 ):
-    data = get_orders()
-
-    return get_table(data)
+    if buyer is None:
+        return get_table(get_orders())
+    return get_table(get_orders_by_buyer(buyer))
 
 
 @table_wrapper()

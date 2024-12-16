@@ -11,9 +11,11 @@ def get_orders():
 
 @query(connector)
 def get_buyers():
-    return """SELECT
-    *
-    FROM public.buyer"""
+    return """SELECT DISTINCT
+    buyer_name,
+    buyer_inn
+    FROM public.buyer
+    GROUP BY buyer_name, buyer_inn"""
 
 
 @query(connector)
