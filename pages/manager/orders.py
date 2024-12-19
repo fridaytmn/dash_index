@@ -1,5 +1,5 @@
-from queries.orders.manager import get_orders, get_orders_by_buyer
-from queries.orders.owner import get_buyers
+from queries.orders.manager import get_orders, get_orders_by_customer
+from queries.orders.owner import get_customers
 from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
@@ -20,28 +20,29 @@ note = """
 def get_content() -> list:
     return [
         html.Div(
-            dbc.Row(
-                [
-                    dbc.Col(
-                        [
-                            html.Label("Заказчик", style={}),
-                            dcc.Dropdown(
-                                id="manager_buyer_orders",
-                                options=[
-                                    {
-                                        "label": f'{row["buyer_name"]} {row["buyer_inn"]}',
-                                        "value": row["buyer_name"] + " " + row["buyer_inn"]
-                                    }
-                                    for index, row in get_buyers().iterrows()
-                                ],
-                                searchable=True,
-                                placeholder=OPTION_ALL,
-                                style={"min-width": "320px", "min-height": "40px"},
-                                value=OPTION_ALL,
-                            ),
+            [
+                dbc.Row(
+                    html.Label("Показ колонок", style={}),
+                ),
+                dbc.Row(
+                    dcc.Checklist(
+                        id="manager_check_orders",
+                        options=[
+                            {
+                                'label': html.Div(column, style={"display": "inline",
+                                                                 "padding-left":"0.5rem",
+                                                                 "padding-right":"0.5rem"}
+                                                  ),
+                                'value': column
+                            }
+                            for column in get_orders().columns
                         ],
-                        width=3,
+                        value=[],
+                        inline=True,
+                        style={"margin-left": "15px"},
+                        ),
                     ),
+                dbc.Row(
                     dbc.Col(
                         dbc.Button(
                             id="get_manager_orders",
@@ -50,8 +51,8 @@ def get_content() -> list:
                         ),
                         width=2,
                     ),
-                ],
-            ),
+                ),
+            ],
             className="form-inline-wrapper",
         ),
         html.Div(id="manager_orders"),
@@ -61,16 +62,35 @@ def get_content() -> list:
 @app.callback(
     Output(component_id="manager_orders", component_property="children"),
     Input("get_manager_orders", "n_clicks"),
-    State(component_id="manager_buyer_orders", component_property="value"),
+    State("manager_check_orders", "value"),
+    # Input("manager_brand_orders", "value"),
+    # State(component_id="manager_customer_orders", component_property="value"),
     prevent_initial_call=True,
 )
 def update(
-    _, buyer
+    _, check
 ):
-    if buyer is None:
-        return get_table(get_orders())
-    return get_table(get_orders_by_buyer(buyer))
-
+    data = get_orders()
+    data = data[check]
+    return get_table(data)
+#     print(check)
+#     return get_table(data)
+#     # if customer is None:
+#     #     data = get_orders()
+#     #     if brand:
+#     #         brands = [br for br in brand]
+#     #         data = data[data["brand"].isin([brand])]
+#     #     return get_table(data)
+#     # return get_table(get_orders_by_customer(customer))
+#
+# @app.callback(
+#     Input("manager_check_orders", "value"),
+#     prevent_initial_call=True,
+# )
+# def checked(
+#         check
+# ):
+#     print("tested", check)
 
 @table_wrapper()
 def get_table(data: pd.DataFrame) -> dash_table.DataTable:

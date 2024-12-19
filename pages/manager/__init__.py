@@ -1,4 +1,4 @@
-from queries.orders.owner import get_buyers
+from queries.orders.owner import get_customers
 
 label = "Менеджер"
 
@@ -8,4 +8,4 @@ UNITS = {
     3: "л.",
 }
 
-BUYERS = get_buyers()
+BUYERS = get_customers()

@@ -5,17 +5,19 @@ from queries.orders import connector
 @query(connector)
 def get_orders():
     return """SELECT
-    *
-    FROM public.orders"""
+    id AS "Номер заявки",
+    seller AS "Поставщик"
+    FROM public.orders
+    ORDER BY id"""
 
 
 @query(connector)
-def get_buyers():
+def get_customers():
     return """SELECT DISTINCT
-    buyer_name,
-    buyer_inn
-    FROM public.buyer
-    GROUP BY buyer_name, buyer_inn"""
+    name,
+    tax_id
+    FROM intex_test.customers
+    GROUP BY name, tax_id"""
 
 
 @query(connector)

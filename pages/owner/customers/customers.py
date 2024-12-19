@@ -1,5 +1,5 @@
-from commands.orders.owner import create_new_buyer
-from queries.orders.owner import get_buyers
+from commands.orders.owner import create_new_customer
+from queries.orders.owner import get_customers
 from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
@@ -10,13 +10,13 @@ import pandas as pd
 from app import app
 import logging
 
-label = "Заказчики"
+label = "Добавление и просмотр заказчиков"
 
 note = """
 Тут можно создать или просмотреть список заказчиков.
 """
 
-allowed_roles = {"ADMIN"}
+allowed_roles = {"ADMIN", "OWNER"}
 
 
 def get_content() -> list:
@@ -30,9 +30,9 @@ def get_content() -> list:
                 [
                     dbc.Col(
                         [
-                            html.Label("Наименование заказчика*", style={}),
+                            html.Label("Наименование организации*", style={}),
                             dbc.Input(
-                                id="buyer_naming",
+                                id="customers_naming",
                                 type="text",
                                 value="",
                             ),
@@ -41,9 +41,9 @@ def get_content() -> list:
                     ),
                     dbc.Col(
                         [
-                            html.Label("ИНН заказчика*", style={}),
+                            html.Label("ИНН*", style={}),
                             dbc.Input(
-                                id="buyer_inn",
+                                id="customers_inn",
                                 type="text",
                                 value="",
                             ),
@@ -52,9 +52,9 @@ def get_content() -> list:
                     ),
                     dbc.Col(
                         [
-                            html.Label("Почтовый адрес", style={}),
+                            html.Label("e-mail адрес", style={}),
                             dbc.Input(
-                                id="buyer_email",
+                                id="customers_email",
                                 type="text",
                                 value="",
                             ),
@@ -65,7 +65,7 @@ def get_content() -> list:
                         [
                             html.Label("Контактный номер", style={}),
                             dbc.Input(
-                                id="buyer_phone_number",
+                                id="customers_phone_number",
                                 type="text",
                                 value="",
                             ),
@@ -74,7 +74,7 @@ def get_content() -> list:
                     ),
                     dbc.Col(
                         dbc.Button(
-                            id="create_buyer",
+                            id="create_customers",
                             n_clicks=0,
                             children="Добавить",
                         ),
@@ -84,7 +84,7 @@ def get_content() -> list:
             ),
             className="form-inline-wrapper",
         ),
-        html.Div(id="buyer"),
+        html.Div(id="customers"),
         html.H3(
             "Список заказчиков",
         ),
@@ -93,7 +93,7 @@ def get_content() -> list:
                 [
                     dbc.Col(
                         dbc.Button(
-                            id="get_buyers",
+                            id="get_customers",
                             n_clicks=0,
                             children="Показать",
                         ),
@@ -103,48 +103,48 @@ def get_content() -> list:
             )
         ),
         html.Br(),
-        html.Div(id="all_buyer"),
+        html.Div(id="all_customers"),
     ]
 
 
 @app.callback(
-    Output(component_id="buyer", component_property="children"),
-    Input("create_buyer", "n_clicks"),
-    State(component_id="buyer_naming", component_property="value"),
-    State(component_id="buyer_inn", component_property="value"),
-    State(component_id="buyer_email", component_property="value"),
-    State(component_id="buyer_phone_number", component_property="value"),
+    Output(component_id="customers", component_property="children"),
+    Input("create_customers", "n_clicks"),
+    State(component_id="customers_naming", component_property="value"),
+    State(component_id="customers_inn", component_property="value"),
+    State(component_id="customers_email", component_property="value"),
+    State(component_id="customers_phone_number", component_property="value"),
     prevent_initial_call=True,
 )
-def update_create_buyer(_, buyer_naming, buyer_inn, buyer_email, buyer_phone_number):
-    if "" in {buyer_naming, buyer_inn}:
+def update_create_customers(_, customers_naming, customers_inn, customers_email, customers_phone_number):
+    if "" in {customers_naming, customers_inn}:
         return templates.flash.render("", "Необходимо заполнить 'Название' и 'ИНН'")
 
     try:
-        create_new_buyer(buyer_naming, buyer_inn, buyer_email, buyer_phone_number)
+        create_new_customer(customers_naming, customers_inn, customers_email, customers_phone_number)
     except Exception as error:
         logging.info(error)
         return templates.flash.render("", "Произошла ошибка при добавлении заказчика")
 
     return [
         html.Br(),
-        dbc.Alert(f"Заказчик {buyer_naming} был добавлен", color="warning"),
+        dbc.Alert(f"Заказчик {customers_naming} был добавлен", color="warning"),
     ]
 
 
 @app.callback(
-    Output(component_id="all_buyer", component_property="children"),
-    Input(component_id="get_buyers", component_property="n_clicks"),
+    Output(component_id="all_customers", component_property="children"),
+    Input(component_id="get_customers", component_property="n_clicks"),
     prevent_initial_call=True,
 )
-def update_all_buyer(_):
+def update_all_customers(_):
 
-    data = get_buyers()
+    data = get_customers()
 
     column_changes = {
-        "buyer_id": "№",
-        "buyer_name": "Наименование",
-        "buyer_inn": "ИНН",
+        "customers_id": "№",
+        "customers_name": "Наименование",
+        "customers_inn": "ИНН",
         "email": "Почта",
         "phone_number": "Контактный телефон",
     }
@@ -158,7 +158,7 @@ def update_all_buyer(_):
 def get_table(data: pd.DataFrame) -> dash_table.DataTable:
     columns, styles = utils.table_format.generate(data)
     return dash_table.DataTable(
-        id="buyer_table",
+        id="customers_table",
         columns=columns,
         style_cell_conditional=styles,
         page_size=50,

@@ -5,7 +5,7 @@ from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash import html, dash_table, dcc
-from queries.orders.owner import get_buyers
+from queries.orders.owner import get_customers
 import utils.table_format
 import pandas as pd
 from app import app
@@ -107,13 +107,13 @@ def get_content() -> list:
                         [
                             html.Label("Заказчик", style={}),
                             dcc.Dropdown(
-                                id="manager_buyer_new_order",
+                                id="manager_customer_new_order",
                                 options=[
                                     {
-                                        "label": f'{row["buyer_name"]} {row["buyer_inn"]}',
-                                        "value": row["buyer_name"] + " " + row["buyer_inn"]
+                                        "label": f'{row["customer_name"]} {row["customer_inn"]}',
+                                        "value": row["customer_name"] + " " + row["customer_inn"]
                                     }
-                                    for index, row in get_buyers().iterrows()
+                                    for index, row in get_customers().iterrows()
                                 ],
                                 searchable=True,
                                 placeholder="Заказчик",
@@ -148,15 +148,15 @@ def get_content() -> list:
     State(component_id="manager_ordered_count_new_order", component_property="value"),
     State(component_id="manager_count_new_order", component_property="value"),
     State(component_id="manager_ed_izm_new_order", component_property="value"),
-    State(component_id="manager_buyer_new_order", component_property="value"),
+    State(component_id="manager_customer_new_order", component_property="value"),
     prevent_initial_call=True,
 )
-def update(_, article, product_name, brand, quanity_ordered, quantity, unit, buyer):
-    if "" in {article, product_name, brand, quanity_ordered, quantity, unit, buyer}:
+def update(_, article, product_name, brand, quanity_ordered, quantity, unit, customer):
+    if "" in {article, product_name, brand, quanity_ordered, quantity, unit, customer}:
         return templates.flash.render("", "Необходимо заполнить все поля")
     order_id = queries.orders.general.get_last_number_order()
     try:
-        save_order.create_new_order(article, product_name, brand, quanity_ordered, quantity, unit, buyer)
+        save_order.create_new_order(article, product_name, brand, quanity_ordered, quantity, unit, customer)
         owner.insert_new_order(order_id["id"][0])
     except Exception as error:
         logging.info(error)
@@ -171,7 +171,7 @@ def update(_, article, product_name, brand, quanity_ordered, quantity, unit, buy
         "ordered_count": [quanity_ordered],
         "count": [quantity],
         "ed_izm": [unit],
-        "buyer": [buyer],
+        "customer": [customer],
     }
 
     data = pd.DataFrame(product_data)
