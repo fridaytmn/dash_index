@@ -1,5 +1,5 @@
-from queries.orders.manager import get_orders, get_orders_by_buyer
-from queries.orders.owner import get_buyers
+from queries.orders.manager import get_orders, get_orders_by_customer
+from queries.orders.owner import get_customers
 from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
@@ -64,7 +64,7 @@ def get_content() -> list:
     Input("get_manager_orders", "n_clicks"),
     State("manager_check_orders", "value"),
     # Input("manager_brand_orders", "value"),
-    # State(component_id="manager_buyer_orders", component_property="value"),
+    # State(component_id="manager_customer_orders", component_property="value"),
     prevent_initial_call=True,
 )
 def update(
@@ -75,13 +75,13 @@ def update(
     return get_table(data)
 #     print(check)
 #     return get_table(data)
-#     # if buyer is None:
+#     # if customer is None:
 #     #     data = get_orders()
 #     #     if brand:
 #     #         brands = [br for br in brand]
 #     #         data = data[data["brand"].isin([brand])]
 #     #     return get_table(data)
-#     # return get_table(get_orders_by_buyer(buyer))
+#     # return get_table(get_orders_by_customer(customer))
 #
 # @app.callback(
 #     Input("manager_check_orders", "value"),

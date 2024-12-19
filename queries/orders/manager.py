@@ -3,7 +3,7 @@ from queries.orders import connector
 
 
 @query(connector)
-def get_orders_by_buyer(buyer: str):
+def get_orders_by_customer(buyer: str):
     return f"""SELECT
     po.id,
     po.article,

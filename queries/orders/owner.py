@@ -12,12 +12,12 @@ def get_orders():
 
 
 @query(connector)
-def get_buyers():
+def get_customers():
     return """SELECT DISTINCT
-    buyer_name,
-    buyer_inn
-    FROM public.buyer
-    GROUP BY buyer_name, buyer_inn"""
+    name,
+    tax_id
+    FROM intex_test.customers
+    GROUP BY name, tax_id"""
 
 
 @query(connector)
