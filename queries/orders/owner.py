@@ -5,8 +5,10 @@ from queries.orders import connector
 @query(connector)
 def get_orders():
     return """SELECT
-    *
-    FROM public.orders"""
+    id AS "Номер заявки",
+    seller AS "Поставщик"
+    FROM public.orders
+    ORDER BY id"""
 
 
 @query(connector)

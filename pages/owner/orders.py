@@ -1,8 +1,8 @@
 from queries.orders.owner import get_orders
 from utils.table_wrapper import table_wrapper
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-from dash import html, dash_table
+from dash import html, dash_table, dcc
 import utils.table_format
 import pandas as pd
 from app import app
@@ -19,6 +19,31 @@ allowed_roles = {"ADMIN"}
 def get_content() -> list:
     return [
         html.Div(
+            [
+                html.Div(
+                    dbc.Row(
+                        dcc.Checklist(
+                            id="owner_check_orders",
+                            options=[
+                                {
+                                    'label': html.Div(
+                                        column, style={
+                                            "display": "inline",
+                                            "padding-left":"0.5rem",
+                                            "padding-right":"0.5rem"
+                                        }
+                                                      ),
+                                    'value': column
+                                }
+                                for column in get_orders().columns
+                            ],
+                            value=[],
+                            inline=True,
+                            style={"margin-left": "15px"},
+                        ),
+                    ),
+                    id="filters",
+                ),
             dbc.Row(
                 [
                     dbc.Col(
@@ -31,6 +56,7 @@ def get_content() -> list:
                     ),
                 ],
             ),
+            ],
             className="form-inline-wrapper",
         ),
         html.Div(id="orders"),
@@ -40,15 +66,15 @@ def get_content() -> list:
 @app.callback(
     Output(component_id="orders", component_property="children"),
     Input("get_orders", "n_clicks"),
+    State("owner_check_orders", "value"),
     prevent_initial_call=True,
 )
 def update(
-    _,
+    _, columns
 ):
     data = get_orders()
-    data["id"] = data.index + 1
 
-    return get_table(data)
+    return get_table(data[columns])
 
 
 @table_wrapper()
