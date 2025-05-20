@@ -15,6 +15,11 @@ note = """
 В отчете отображается как верно вписывать артикул.
 """
 
+allowed_roles = {
+    "ADMIN",
+    "MANAGER",
+}
+
 
 def get_content() -> list:
     return [
