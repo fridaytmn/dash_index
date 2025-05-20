@@ -26,14 +26,15 @@ def get_content() -> list:
                             id="owner_check_orders",
                             options=[
                                 {
-                                    'label': html.Div(
-                                        column, style={
+                                    "label": html.Div(
+                                        column,
+                                        style={
                                             "display": "inline",
-                                            "padding-left":"0.5rem",
-                                            "padding-right":"0.5rem"
-                                        }
-                                                      ),
-                                    'value': column
+                                            "padding-left": "0.5rem",
+                                            "padding-right": "0.5rem",
+                                        },
+                                    ),
+                                    "value": column,
                                 }
                                 for column in get_orders().columns
                             ],
@@ -44,18 +45,18 @@ def get_content() -> list:
                     ),
                     id="filters",
                 ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        dbc.Button(
-                            id="get_orders",
-                            n_clicks=0,
-                            children="Показать",
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            dbc.Button(
+                                id="get_orders",
+                                n_clicks=0,
+                                children="Показать",
+                            ),
+                            width=2,
                         ),
-                        width=2,
-                    ),
-                ],
-            ),
+                    ],
+                ),
             ],
             className="form-inline-wrapper",
         ),
@@ -69,9 +70,7 @@ def get_content() -> list:
     State("owner_check_orders", "value"),
     prevent_initial_call=True,
 )
-def update(
-    _, columns
-):
+def update(_, columns):
     data = get_orders()
 
     return get_table(data[columns])

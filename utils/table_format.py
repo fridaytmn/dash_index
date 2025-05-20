@@ -111,8 +111,6 @@ def generate_url(dataframe: pd.DataFrame):
     for column in dataframe:
         if column == MARKDOWN_COLUMN_INVOICE and not dataframe[column].empty:
             generate_url_for_files(dataframe, column)
-        # if column == MARKDOWN_COLUMN_INVOICE_FACTURE:
-        #     generate_url_for_files(dataframe, column)
     return dataframe
 
 

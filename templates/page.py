@@ -16,19 +16,6 @@ def main_page(page: Page) -> dbc.Container:
 
 def report_page(page: Page) -> list:
     result = []
-    result.append(
-        html.Div(
-            [
-                dbc.Button(
-                    "Сообщить о проблеме",
-                    id="open_feedback_form",
-                    n_clicks=0,
-                ),
-                html.Div(id="feedback_form"),
-            ],
-            className="button-report",
-        ),
-    )
     if page.get_note() is not None:
         result.append(
             html.Div(

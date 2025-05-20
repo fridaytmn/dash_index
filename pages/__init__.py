@@ -4,7 +4,6 @@ import pandas as pd
 
 from utils.page import create_pages_provider
 from utils.category import create_categories_provider
-import pymorphy2
 from whoosh.fields import ID, Schema, TEXT, KEYWORD
 from whoosh.filedb.filestore import RamStorage
 from whoosh.writing import AsyncWriter
@@ -70,11 +69,9 @@ QUERIES_LABEL_PARTIAL_SUGGESTION = "неточный поиск"  # неточн
 pages_provider = create_pages_provider("./pages")
 categories_provider = create_categories_provider("./pages")
 
-morph = pymorphy2.MorphAnalyzer()
-
 
 def stem(word):
-    return morph.parse(word)[0].normal_form
+    return word
 
 
 schema = Schema(

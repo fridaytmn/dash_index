@@ -44,7 +44,7 @@ def get_content() -> list:
 @app.callback(
     Output("output-data-upload", "children"), Input("upload-data", "contents"), State("upload-data", "filename")
 )
-def upload_to_s3(contents, filename):
+def upload_to_s3(contents, filename):  # noqa C901
     if contents is not None:
         # Извлечение содержимого файла
         content_type, content_string = contents.split(",")
@@ -60,16 +60,13 @@ def upload_to_s3(contents, filename):
             )
 
             # Сохранение в базу данных
-            try:
-                insert_file(1, filename, file_url)
-            except Exception as e:
-                print(e)
+            insert_file(1, filename, file_url)
 
             # Возврат ссылки пользователю
             return html.Div(
                 [
                     html.P(f"Файл '{filename}' успешно загружен в MinIO."),
-                    html.P(f"Ссылка на файл:"),
+                    html.P("Ссылка на файл:"),
                     html.A(file_url, href=file_url, target="_blank"),
                 ]
             )
