@@ -26,7 +26,7 @@ def get_orders_by_customer(buyer: str):
 
 @query(connector)
 def get_orders():
-    return f"""SELECT
+    return """SELECT
     po.id,
     po.article,
     po.product_name,
@@ -41,7 +41,7 @@ def get_orders():
     FROM public.orders po
     LEFT OUTER JOIN public.files pf
     ON po.id = pf.order_id
-    LEFT OUTER JOIN public.buyer b 
+    LEFT OUTER JOIN public.buyer b
     ON po.buyer = b.buyer_id
     ORDER BY po.id
 """

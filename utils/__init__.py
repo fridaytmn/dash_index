@@ -10,14 +10,8 @@ import os
 _scheduler = None
 
 allowed_users = [
-    "vechk_aa",
-    "pastukhov_k",
-    "akhmirova_ap",
-    "sosnin_as",
-    "mikhaylov_ks",
-    "udovenko_yua",
-    "checherin_na",
-    "smailova_da",
+    "admin",
+    "manager",
 ]
 # список пользователей, которые всегда имеют доступ к категориям у которых есть get_allowed_groups
 
