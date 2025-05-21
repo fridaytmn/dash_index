@@ -57,9 +57,9 @@ def get_content() -> list:
 def update(_, article):
     if article == "":
         return templates.flash.render("", "Необходимо заполнить все поля")
-    data = pd.read_excel("articles.xlsx")
-    data = data[data["Артикул"].str.contains(article)]
-    result = data.drop(columns=["Артикул (поставщик)"])
+    data = pd.read_excel("Nomenclature.xlsx")
+    data = data.fillna("")[data.fillna("")["Артикул"].str.contains(article)]
+    result = data.drop(data.columns[[0, 1, 2, -1]], axis=1)
     return get_table(result)
 
 
