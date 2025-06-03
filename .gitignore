@@ -3,3 +3,11 @@ Nomenclature.xlsx
 proba.py
 user_log_pass.py
 .venv
+/.idea/.gitignore
+/.idea/dash_index.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/Nomenclature_old.xlsx
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/vcs.xml
+/~$Nomenclature.xlsx
