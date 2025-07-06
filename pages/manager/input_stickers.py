@@ -1,4 +1,6 @@
 import templates.flash
+from queries import FILE_PATH
+from utils.excel_processing import find_cell_by_value, update_cell_by_value
 from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
@@ -8,13 +10,12 @@ import pandas as pd
 from app import app
 import utils.user
 
+
 label = "Оприходывание наклеек"
 
 note = """
 Тут можно внести наклейки на склад.
 """
-
-is_hidden = True
 
 
 def get_content() -> list:
@@ -25,14 +26,13 @@ def get_content() -> list:
                     dbc.Col(
                         dcc.Dropdown(
                             id="manager_input_sticker",
-                            options=[],
-                            # options=pd.read_excel("C:\\files\\reestr\\Nomenclature.xlsx").iloc[:, 10].dropna().fillna("").unique(),
+                            options=pd.read_excel(FILE_PATH).iloc[:, 11].dropna().fillna("").unique(),
                             value="",
                             placeholder="Выберите Наклейку",
                             searchable=True,
                             clearable=False,
                         ),
-                        width="8",
+                        width=40,
                     ),
                     dbc.Col(
                         dcc.Input(
@@ -40,7 +40,6 @@ def get_content() -> list:
                             type="text",
                             value="",
                         ),
-                        width="2",
                     ),
                     dbc.Col(
                         html.Button(
@@ -62,33 +61,34 @@ def get_content() -> list:
     Output(component_id="save_new_storage_sticker", component_property="children"),
     Input("manager_save_input_sticker", "n_clicks"),
     State(component_id="manager_input_sticker", component_property="value"),
+    State(component_id="manager_input_sticker_count", component_property="value"),
     prevent_initial_call=True,
 )
-def update(_, sticker):
-    if "" in {sticker}:
+def update(_, sticker, count):
+    if "" in {sticker, count}:
         return templates.flash.render("", "Необходимо заполнить все поля")
-    # order_id = queries.orders.general.get_last_number_order()
-    # try:
-    #     save_order.create_new_order(article, product_name, brand, quanity_ordered, quantity, unit, customer)
-    #     owner.insert_new_order(order_id["id"][0])
-    # except Exception as error:
-    #     logging.info(error)
-    #     return templates.flash.render("", "Что-то пошло не по плану")
-    #
-    # product_data = {
-    #     "id": [order_id["id"][0]],
-    #     "article": [article],
-    #     "name": [product_name],
-    #     "brand": [brand],
-    #     "ordered_count": [quanity_ordered],
-    #     "count": [quantity],
-    #     "ed_izm": [unit],
-    #     "customer": [customer],
-    # }
-    #
-    # data = pd.DataFrame(product_data)
-    #
-    # return get_table(data)
+
+    location = find_cell_by_value(
+        filename=FILE_PATH,
+        search_value=sticker,
+        number_column=11
+    )
+
+    if location:
+        row, col = location
+        print(f"Значение найдено в ячейке: строка {row}, столбец {col}")
+    else:
+        print("Значение не найдено.")
+
+    if update_cell_by_value(
+        filename=FILE_PATH,
+        row=row,
+        column=col+1,
+        value=int(count)
+    ):
+        return templates.flash.render("", f"Количество для {sticker} было увеличино на {count}", color="#52F47E")
+
+    return templates.flash.render("", f"Произошла ошибка при обновлении данных", color="danger")
 
 
 @table_wrapper()
