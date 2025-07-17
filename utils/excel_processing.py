@@ -19,7 +19,7 @@ def find_cell_by_value(filename, search_value, number_column):  # noqa C901
         иначе None.
     """
     try:
-        workbook = load_workbook(filename)
+        workbook = load_workbook(filename, data_only=True)
         for cell in [x for x in workbook.active.columns][number_column]:
             if cell.value == search_value:
                 return cell.row, cell.column
