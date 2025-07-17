@@ -1,10 +1,10 @@
 import templates.flash
 from queries import FILE_PATH
-from utils.excel_processing import find_cell_by_value, update_cell_by_value
+from utils.excel_processing import find_cell_by_value, update_cell_by_value, get_value_by_location
 from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-from dash import html, dash_table, dcc
+from dash import html, dash_table, dcc, callback_context
 import utils.table_format
 import pandas as pd
 from app import app
@@ -24,30 +24,51 @@ def get_content() -> list:
             dbc.Row(
                 [
                     dbc.Col(
-                        dcc.Dropdown(
-                            id="manager_input_sticker",
-                            options=pd.read_excel(FILE_PATH).iloc[:, 11].dropna().fillna("").unique(),
-                            value="",
-                            placeholder="Выберите Наклейку",
-                            searchable=True,
-                            clearable=False,
-                        ),
-                        width=40,
+                        [
+                            html.Label(
+                                html.Span("Артикул"),
+                                className="period-title",
+                            ),
+                            dcc.Dropdown(
+                                id="manager_input_sticker",
+                                options=pd.read_excel(FILE_PATH).iloc[:, 11].dropna().fillna("").unique(),
+                                value="",
+                                multi=False,
+                                placeholder="Выберите Наклейку",
+                                searchable=True,
+                                clearable=False,
+                                style={"min-width": "520px", "display": "flex"},
+                            ),
+                        ],
                     ),
                     dbc.Col(
-                        dcc.Input(
-                            id="manager_input_sticker_count",
-                            type="text",
-                            value="",
-                        ),
+                        [
+                            html.Label("Кол-во наклеек", style={}),
+                            dbc.Input(
+                                id="manager_input_sticker_count",
+                                type="text",
+                                value="",
+                                style={"min-width": "120px", "display": "flex"},
+                            ),
+                        ],
                     ),
                     dbc.Col(
-                        html.Button(
+                        dbc.Button(
                             id="manager_save_input_sticker",
                             n_clicks=0,
-                            children="Сохранить",
+                            children="Добавить",
+                            style={"margin-top": "5px", "background-color": "#acd180"},
                         ),
-                        width="auto",
+                        width=4,
+                    ),
+                    dbc.Col(
+                        dbc.Button(
+                            id="manager_save_remove_sticker",
+                            n_clicks=0,
+                            children="Убавить",
+                            style={"margin-top": "5px", "background-color": "#f55151"},
+                        ),
+                        width=4,
                     ),
                 ]
             ),
@@ -60,35 +81,40 @@ def get_content() -> list:
 @app.callback(
     Output(component_id="save_new_storage_sticker", component_property="children"),
     Input("manager_save_input_sticker", "n_clicks"),
+    Input("manager_save_remove_sticker", "n_clicks"),
     State(component_id="manager_input_sticker", component_property="value"),
     State(component_id="manager_input_sticker_count", component_property="value"),
     prevent_initial_call=True,
 )
-def update(_, sticker, count):
+def update(_, __, sticker, count):
     if "" in {sticker, count}:
         return templates.flash.render("", "Необходимо заполнить все поля")
 
-    location = find_cell_by_value(
-        filename=FILE_PATH,
-        search_value=sticker,
-        number_column=11
-    )
+    remove = callback_context.triggered[0]["prop_id"].split(".")[0] == "manager_save_remove_sticker"
+
+    location = find_cell_by_value(filename=FILE_PATH, search_value=sticker, number_column=11)
 
     if location:
         row, col = location
-        print(f"Значение найдено в ячейке: строка {row}, столбец {col}")
+        app.server.logger.info(f"Значение найдено в ячейке: строка {row}, столбец {col}")
     else:
-        print("Значение не найдено.")
+        app.server.logger.info("Значение не найдено.")
 
     if update_cell_by_value(
         filename=FILE_PATH,
         row=row,
-        column=col+1,
-        value=int(count)
+        column=col + 1,
+        math_operation="-" if remove else "+",
+        value=int(count),
     ):
-        return templates.flash.render("", f"Количество для {sticker} было увеличино на {count}", color="#52F47E")
+        return templates.flash.render(
+            "",
+            f"Количество для {sticker} было {"уменьшино" if remove else "увеличино"} на {count}, "
+            f"текущее количество '{get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 1)}'",
+            color=f"{"#f55151" if remove else "#acd180"}",
+        )
 
-    return templates.flash.render("", f"Произошла ошибка при обновлении данных", color="danger")
+    return templates.flash.render("", "Произошла ошибка при обновлении данных", color="danger")
 
 
 @table_wrapper()
