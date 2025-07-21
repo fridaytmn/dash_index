@@ -1,11 +1,10 @@
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 from dash import html, dash_table
 import pandas as pd
 
 from utils.table_wrapper import table_wrapper
 import utils.table_format
-import templates.flash
 from app import app
 import utils.user
 

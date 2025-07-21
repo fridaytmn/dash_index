@@ -58,7 +58,7 @@ def update(_, article):
     if article == "":
         return templates.flash.render("", "Необходимо заполнить все поля")
     data = pd.read_excel("C:\\files\\reestr\\Nomenclature.xlsx")
-    data = data.fillna("")[data.fillna("")["Артикул"].str.contains(article)]
+    data = data.fillna("")[data.fillna("")["Артикул"].str.contains(article.upper())]
     result = data.drop(data.columns[[0, 1, 2, 3, 4, -1]], axis=1)
     return get_table(result)
 
