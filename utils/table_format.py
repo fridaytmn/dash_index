@@ -76,7 +76,7 @@ def generate(
     column_names: List = None,
     columns_with_suffix: List = None,
     columns_suffix: str = "",
-    group_delimiter: str = ",",
+    group_delimiter: str = " ",
 ) -> Tuple[List, List]:
     if column_names is None:
         column_names = dataframe.columns

@@ -32,12 +32,12 @@ def find_cell_by_value(filename, search_value, number_column):  # noqa C901
     return None
 
 
-def update_cell_by_value(filename, row, column, math_operation, value):
+def update_cell_by_value(filename, row, columns, values):
 
     try:
         workbook = load_workbook(filename, data_only=True)
-        current_value = workbook.active.cell(row=row, column=column).value
-        workbook.active.cell(row=row, column=column).value = operations[math_operation](current_value, value)
+        for i, column in enumerate(columns):
+            workbook.active.cell(row=row, column=column).value = values[i]
         workbook.save(filename)
     except TypeError:
         return False
