@@ -84,7 +84,7 @@ def start_server() -> None:
     mode = os.environ.get("MODE")
     app.server.logger.info(f"DASH IS STARTED IN {mode} MODE!")
     if mode == "PRODUCTION":
-        httpd = WebServer(wsgi_app=app.server, listen="0.0.0.0", port=8052)
+        httpd = WebServer(wsgi_app=app.server, listen="0.0.0.0", port=8050)
         httpd.serve_forever()
     else:
         app.run(debug=True, host="0.0.0.0", port=8055)
