@@ -17,7 +17,11 @@ class WebServer:
         self.listen = listen
         self.port = port
         self.server = make_server(
-            self.listen, self.port, self.wsgi_app, ThreadingWSGIServer, NoLoggingWSGIRequestHandler
+            self.listen,
+            self.port,
+            self.wsgi_app,
+            ThreadingWSGIServer,
+            NoLoggingWSGIRequestHandler,
         )
 
     def serve_forever(self):

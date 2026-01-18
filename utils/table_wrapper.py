@@ -41,10 +41,17 @@ def table_wrapper(columns=None):
                             ),
                             dbc.DropdownMenuItem(
                                 "C картинками XLSX",
-                                id={"type": "table_export_with_thumbnails", "index": unique_id},
+                                id={
+                                    "type": "table_export_with_thumbnails",
+                                    "index": unique_id,
+                                },
                                 n_clicks=0,
                                 disabled=not next(
-                                    (column for column in table.columns if column["name"] == "Предпросмотр"),
+                                    (
+                                        column
+                                        for column in table.columns
+                                        if column["name"] == "Предпросмотр"
+                                    ),
                                     False,
                                 ),
                             ),
@@ -104,7 +111,11 @@ def table_wrapper(columns=None):
     State({"type": "table_search_store", "index": MATCH}, "data"),
 )
 def table_actions(
-    filter_value: str, included_columns: str, sort_by: list[dict], filter_query: str, data: list[dict]
+    filter_value: str,
+    included_columns: str,
+    sort_by: list[dict],
+    filter_query: str,
+    data: list[dict],
 ) -> list[dict]:
     """
     Функция принимает данные и аргументы для их сортировки
@@ -115,7 +126,9 @@ def table_actions(
     dataframe = pd.DataFrame(data)
     if not filter_query == "" and filter_query is not None:
         dataframe = filter_dataframe_by_column(filter_query, dataframe)
-    return filter_dataframe(filter_value, included_columns, sort_dataframe(dataframe, sort_by)).to_dict("records")
+    return filter_dataframe(
+        filter_value, included_columns, sort_dataframe(dataframe, sort_by)
+    ).to_dict("records")
 
 
 @app.callback(

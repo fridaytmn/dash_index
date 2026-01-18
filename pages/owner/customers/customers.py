@@ -116,12 +116,16 @@ def get_content() -> list:
     State(component_id="customers_phone_number", component_property="value"),
     prevent_initial_call=True,
 )
-def update_create_customers(_, customers_naming, customers_inn, customers_email, customers_phone_number):
+def update_create_customers(
+    _, customers_naming, customers_inn, customers_email, customers_phone_number
+):
     if "" in {customers_naming, customers_inn}:
         return templates.flash.render("", "Необходимо заполнить 'Название' и 'ИНН'")
 
     try:
-        create_new_customer(customers_naming, customers_inn, customers_email, customers_phone_number)
+        create_new_customer(
+            customers_naming, customers_inn, customers_email, customers_phone_number
+        )
     except Exception as error:
         logging.info(error)
         return templates.flash.render("", "Произошла ошибка при добавлении заказчика")

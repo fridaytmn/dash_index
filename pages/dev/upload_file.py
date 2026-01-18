@@ -22,7 +22,9 @@ def get_content() -> list:
                 html.H1("Загрузка PDF в MinIO"),
                 dcc.Upload(
                     id="upload-data",
-                    children=html.Div(["Перетащите файл или ", html.A("выберите файл")]),
+                    children=html.Div(
+                        ["Перетащите файл или ", html.A("выберите файл")]
+                    ),
                     style={
                         "width": "100%",
                         "height": "60px",
@@ -42,7 +44,9 @@ def get_content() -> list:
 
 
 @app.callback(
-    Output("output-data-upload", "children"), Input("upload-data", "contents"), State("upload-data", "filename")
+    Output("output-data-upload", "children"),
+    Input("upload-data", "contents"),
+    State("upload-data", "filename"),
 )
 def upload_to_s3(contents, filename):  # noqa C901
     if contents is not None:
@@ -52,11 +56,18 @@ def upload_to_s3(contents, filename):  # noqa C901
 
         # Загрузка в MinIO
         try:
-            s3_client.put_object(Bucket=BUCKET_NAME, Key=filename, Body=decoded, ContentType="application/pdf")
+            s3_client.put_object(
+                Bucket=BUCKET_NAME,
+                Key=filename,
+                Body=decoded,
+                ContentType="application/pdf",
+            )
 
             # Генерация ссылки на скачивание (постоянная или временная)
             file_url = s3_client.generate_presigned_url(
-                "get_object", Params={"Bucket": BUCKET_NAME, "Key": filename}, ExpiresIn=2678400
+                "get_object",
+                Params={"Bucket": BUCKET_NAME, "Key": filename},
+                ExpiresIn=2678400,
             )
 
             # Сохранение в базу данных

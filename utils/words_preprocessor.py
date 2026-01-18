@@ -17,7 +17,9 @@ def tokenize(text: str) -> List[str]:
         список слов из запроса, приведенных к нижнему регистру
     """
     tokens_with_punctuation = nltk.word_tokenize(text)
-    tokens = [i.lower() for i in tokens_with_punctuation if (i not in string.punctuation)]
+    tokens = [
+        i.lower() for i in tokens_with_punctuation if (i not in string.punctuation)
+    ]
     filtered_tokens = [i for i in tokens if (i not in stop_words)]
     return filtered_tokens
 

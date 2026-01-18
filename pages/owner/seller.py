@@ -117,7 +117,9 @@ def get_content() -> list:
     State(component_id="seller_phone_number", component_property="value"),
     prevent_initial_call=True,
 )
-def update_create_seller(_, seller_naming, seller_inn, seller_email, seller_phone_number):
+def update_create_seller(
+    _, seller_naming, seller_inn, seller_email, seller_phone_number
+):
     if "" in {seller_naming, seller_inn}:
         return templates.flash.render("", "Необходимо заполнить 'Название' и 'ИНН'")
 

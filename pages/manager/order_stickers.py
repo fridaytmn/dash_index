@@ -15,10 +15,10 @@ from app import app
 import utils.user
 
 
-label = "Оприходование наклеек"
+label = "Заказ наклеек"
 
 note = """
-Тут можно внести наклейки на склад.
+Тут можно заказать наклейки на склад.
 """
 
 
@@ -30,22 +30,27 @@ def get_content() -> list:
                     dbc.Col(
                         [
                             html.Label(
-                                html.Span("Артикул*"),
+                                html.Span("Наименование"),
                                 className="period-title",
                             ),
                             dcc.Dropdown(
-                                id="manager_input_sticker",
+                                id="manager_order_sticker",
                                 options=pd.read_excel(FILE_PATH)
                                 .iloc[:, 11]
                                 .dropna()
                                 .fillna("")
                                 .unique(),
                                 value="",
-                                multi=False,
                                 placeholder="Выберите Наклейку",
                                 searchable=True,
                                 clearable=False,
-                                style={"min-width": "520px", "display": "flex"},
+                                multi=True,
+                                style={
+                                    "min-width": "520px",
+                                    "width": "520px",
+                                    "min-height": "300px",
+                                    "display": "flex",
+                                },
                             ),
                         ],
                     ),
@@ -53,7 +58,7 @@ def get_content() -> list:
                         [
                             html.Label("Кол-во наклеек*", style={}),
                             dbc.Input(
-                                id="manager_input_sticker_count",
+                                id="manager_order_sticker_count",
                                 type="text",
                                 value="",
                                 style={"min-width": "120px", "display": "flex"},
@@ -64,7 +69,7 @@ def get_content() -> list:
                         [
                             html.Label("Номер ячейки", style={}),
                             dbc.Input(
-                                id="manager_input_sticker_cell",
+                                id="manager_order_sticker_cell",
                                 type="text",
                                 value="",
                                 style={"min-width": "120px", "display": "flex"},
@@ -89,11 +94,11 @@ def get_content() -> list:
 
 
 @app.callback(
-    Output(component_id="save_new_storage_sticker", component_property="children"),
-    Input(component_id="manager_update_sticker", component_property="n_clicks"),
-    State(component_id="manager_input_sticker", component_property="value"),
-    State(component_id="manager_input_sticker_count", component_property="value"),
-    State(component_id="manager_input_sticker_cell", component_property="value"),
+    Output(component_id="save_order_sticker", component_property="children"),
+    Input(component_id="manager_create_order_sticker", component_property="n_clicks"),
+    State(component_id="manager_order_sticker", component_property="value"),
+    State(component_id="manager_order_sticker_count", component_property="value"),
+    State(component_id="manager_order_sticker_cell", component_property="value"),
     prevent_initial_call=True,
 )
 def update(_, sticker, count, cell):
@@ -137,7 +142,7 @@ def update(_, sticker, count, cell):
 def get_table(data: pd.DataFrame) -> dash_table.DataTable:
     columns, styles = utils.table_format.generate(data)
     return dash_table.DataTable(
-        id="manager_orders_table",
+        id="manager_new_orders_table",
         columns=columns,
         style_cell_conditional=styles,
         page_size=50,
@@ -148,14 +153,14 @@ def get_table(data: pd.DataFrame) -> dash_table.DataTable:
 
 
 @app.callback(
-    Output(component_id="manager_input_sticker_count", component_property="value"),
-    Output(component_id="manager_input_sticker_cell", component_property="value"),
+    Output(component_id="manager_order_sticker_count", component_property="value"),
+    Output(component_id="manager_order_sticker_cell", component_property="value"),
     Output(
-        component_id="save_new_storage_sticker",
+        component_id="save_new_order_sticker",
         component_property="children",
         allow_duplicate=True,
     ),
-    Input(component_id="manager_input_sticker", component_property="value"),
+    Input(component_id="manager_order_sticker", component_property="value"),
     prevent_initial_call=True,
 )
 def get_value_to_cell(sticker):

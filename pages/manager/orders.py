@@ -31,7 +31,11 @@ def get_content() -> list:
                             {
                                 "label": html.Div(
                                     column,
-                                    style={"display": "inline", "padding-left": "0.5rem", "padding-right": "0.5rem"},
+                                    style={
+                                        "display": "inline",
+                                        "padding-left": "0.5rem",
+                                        "padding-right": "0.5rem",
+                                    },
                                 ),
                                 "value": column,
                             }

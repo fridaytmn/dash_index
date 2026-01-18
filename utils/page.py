@@ -135,7 +135,9 @@ def create_page(path: Path) -> Page:
 
 
 def is_correct_page(page: Page) -> bool:
-    if not page.is_attr_exist("get_content") and not page.is_attr_exist("permanent_redirect"):
+    if not page.is_attr_exist("get_content") and not page.is_attr_exist(
+        "permanent_redirect"
+    ):
         return False
 
     return True
@@ -159,8 +161,13 @@ def pages_menu_condition(page: Page, category_name: str) -> bool:
     )
 
 
-def pages_menu_condition_with_subcategories(page: Page, category_name: str, subcategory_name: str) -> bool:
-    if pages_menu_condition(page, category_name) and page.get_subcategory_name() == subcategory_name:
+def pages_menu_condition_with_subcategories(
+    page: Page, category_name: str, subcategory_name: str
+) -> bool:
+    if (
+        pages_menu_condition(page, category_name)
+        and page.get_subcategory_name() == subcategory_name
+    ):
         return True
 
     return False
@@ -212,17 +219,27 @@ def generate_link(page: Page) -> dict:
     match page:
         case page if page.is_open_in_new_tab():
             return {
-                "children": [page.get_label() + " ", html.I(className="bi bi-box-arrow-up-right")],
+                "children": [
+                    page.get_label() + " ",
+                    html.I(className="bi bi-box-arrow-up-right"),
+                ],
                 "href": host + page.get_short_path(),
                 "className": "link",
                 "target": "_blank",
             }
         case page if page.get_external_link():
             return {
-                "children": [page.get_label() + " ", html.I(className="bi bi-box-arrow-up-right")],
+                "children": [
+                    page.get_label() + " ",
+                    html.I(className="bi bi-box-arrow-up-right"),
+                ],
                 "href": page.get_external_link(),
                 "className": "link",
                 "target": "_blank",
             }
         case _:
-            return {"children": page.get_label(), "href": "/" + page.get_short_path(), "className": "link"}
+            return {
+                "children": page.get_label(),
+                "href": "/" + page.get_short_path(),
+                "className": "link",
+            }

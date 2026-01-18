@@ -50,7 +50,9 @@ def update(_):
     df_product = pd.DataFrame(product_data)
 
     return [
-        dcc.Store("notification_settings_sent_store", data=df_product.to_dict("records")),
+        dcc.Store(
+            "notification_settings_sent_store", data=df_product.to_dict("records")
+        ),
         html.Div(id="notification_settings_tabs_content"),
         dbc.Button(id="add-btn", n_clicks=0, children="Добавить строку"),
     ]

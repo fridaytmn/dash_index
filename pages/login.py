@@ -24,7 +24,9 @@ def get_content() -> list:
                             [
                                 html.Div(
                                     [
-                                        dbc.Label("Имя пользователя", html_for="username"),
+                                        dbc.Label(
+                                            "Имя пользователя", html_for="username"
+                                        ),
                                         dbc.Input(
                                             id="username",
                                             type="text",
@@ -88,4 +90,8 @@ def set_cookie(_, username: str, password: str, q_s: str):
         return templates.flash.render(title=error.title, text=error.reason)
     if token:
         AuthManager.set_cookie(cookie=json.dumps({"token": token}))
-        return dcc.Location(id="access_login", pathname="/", href=f"/{parsed_query_string.get('return-url', [''])[0]}")
+        return dcc.Location(
+            id="access_login",
+            pathname="/",
+            href=f"/{parsed_query_string.get('return-url', [''])[0]}",
+        )

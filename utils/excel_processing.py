@@ -3,7 +3,12 @@ import operator
 
 from app import app
 
-operations = {"+": operator.add, "-": operator.sub, "*": operator.mul, "/": operator.truediv}
+operations = {
+    "+": operator.add,
+    "-": operator.sub,
+    "*": operator.mul,
+    "/": operator.truediv,
+}
 
 
 def find_cell_by_value(filename, search_value, number_column):  # noqa C901
@@ -24,7 +29,9 @@ def find_cell_by_value(filename, search_value, number_column):  # noqa C901
             if cell.value == search_value:
                 return cell.row, cell.column
 
-        app.server.logger.info(f"Значение '{search_value}' не найдено в файле '{filename}'.")
+        app.server.logger.info(
+            f"Значение '{search_value}' не найдено в файле '{filename}'."
+        )
 
     except FileNotFoundError:
         app.server.logger.info(f"Ошибка: Файл '{filename}' не найден.")
@@ -32,7 +39,7 @@ def find_cell_by_value(filename, search_value, number_column):  # noqa C901
     return None
 
 
-def update_cell_by_value(filename, row, columns, values):
+def update_cell_by_value(filename, row, columns, values):  # noqa C901
 
     try:
         workbook = load_workbook(filename, data_only=True)

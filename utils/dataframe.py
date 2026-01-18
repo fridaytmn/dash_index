@@ -8,7 +8,9 @@ from urlextract import URLExtract
 import requests
 from http import HTTPStatus
 
-SPREADSHEET_LIST_NAME_LENGTH_MAX = 30  # максимальное число символов названия листа в xlsx документе
+SPREADSHEET_LIST_NAME_LENGTH_MAX = (
+    30  # максимальное число символов названия листа в xlsx документе
+)
 
 url_extractor = URLExtract(limit=1, extract_localhost=False)
 
@@ -33,10 +35,18 @@ def from_bytes(
         match filename:
             case filename if (filename.endswith("csv")):
                 return pd.read_csv(
-                    io.StringIO(content_decoded.decode("utf-8")), index_col=None, header=header, dtype=dtype
+                    io.StringIO(content_decoded.decode("utf-8")),
+                    index_col=None,
+                    header=header,
+                    dtype=dtype,
                 )
             case filename if (filename.endswith("xlsx") or filename.endswith("xls")):
-                return pd.read_excel(io.BytesIO(content_decoded), index_col=None, header=header, dtype=dtype)
+                return pd.read_excel(
+                    io.BytesIO(content_decoded),
+                    index_col=None,
+                    header=header,
+                    dtype=dtype,
+                )
             case _:
                 return pd.DataFrame()
     except (ImportError, ValueError):
@@ -55,12 +65,23 @@ def convert_to_xlsx(
         with pd.ExcelWriter(output, "xlsxwriter") as writer:
             for row, dataframe in enumerate(data):
                 dataframe = pd.DataFrame(dataframe)
-                dataframe.to_excel(writer, sheet_names[row][:SPREADSHEET_LIST_NAME_LENGTH_MAX], index=index)
-                if (thumbnail_column_name in dataframe.columns) and is_thumbnails_enabled:
-                    thumbnail_column_index = dataframe.columns.get_loc(thumbnail_column_name) + 1
-                    sheet = writer.sheets[sheet_names[row][:SPREADSHEET_LIST_NAME_LENGTH_MAX]]
+                dataframe.to_excel(
+                    writer,
+                    sheet_names[row][:SPREADSHEET_LIST_NAME_LENGTH_MAX],
+                    index=index,
+                )
+                if (
+                    thumbnail_column_name in dataframe.columns
+                ) and is_thumbnails_enabled:
+                    thumbnail_column_index = (
+                        dataframe.columns.get_loc(thumbnail_column_name) + 1
+                    )
+                    sheet = writer.sheets[
+                        sheet_names[row][:SPREADSHEET_LIST_NAME_LENGTH_MAX]
+                    ]
                     thumbnail_urls = {
-                        row_num: extract_url(value) for (row_num, value) in dataframe[thumbnail_column_name].items()
+                        row_num: extract_url(value)
+                        for (row_num, value) in dataframe[thumbnail_column_name].items()
                     }
                     thumbnail(
                         sheet,
@@ -86,8 +107,13 @@ def thumbnail(
     sheet.set_default_row(thumbnail_height)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        thumbnails = executor.map(lambda u: (u[0], get_thumbnail(u[1], thumbnail_size)), urls.items())
-        [insert_thumbnail(sheet, row_num + 1, thumbnail_column_index, thumb) for row_num, thumb in thumbnails]
+        thumbnails = executor.map(
+            lambda u: (u[0], get_thumbnail(u[1], thumbnail_size)), urls.items()
+        )
+        [
+            insert_thumbnail(sheet, row_num + 1, thumbnail_column_index, thumb)
+            for row_num, thumb in thumbnails
+        ]
 
 
 def extract_url(value: str) -> Optional[str]:

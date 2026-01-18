@@ -43,7 +43,11 @@ def get_content() -> list:
 )
 def update(_):
     data = pd.read_excel("C:\\files\\reestr\\Nomenclature.xlsx")
-    result = data.iloc[:, [5, 6, 8, 9]].dropna(subset=["Склад Мск, шт.", "Склад Тмн, шт."], how="all").fillna(0)
+    result = (
+        data.iloc[:, [5, 6, 8, 9]]
+        .dropna(subset=["Склад Мск, шт.", "Склад Тмн, шт."], how="all")
+        .fillna(0)
+    )
     result["Итого"] = result["Склад Мск, шт."] + result["Склад Тмн, шт."]
     return get_table(result)
 

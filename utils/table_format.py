@@ -91,7 +91,11 @@ def generate(
             suffix=columns_suffix if column_name in columns_with_suffix else "",
             group_delimiter=group_delimiter,
             is_markdown=column_name
-            in {MARKDOWN_COLUMN_INVOICE, THUMBNAIL_COLUMN_NAME, MARKDOWN_COLUMN_INVOICE_FACTURE},
+            in {
+                MARKDOWN_COLUMN_INVOICE,
+                THUMBNAIL_COLUMN_NAME,
+                MARKDOWN_COLUMN_INVOICE_FACTURE,
+            },
             is_thumbnail=column_name == THUMBNAIL_COLUMN_NAME,
         )
         for column_name in column_names
@@ -117,7 +121,10 @@ def generate_url(dataframe: pd.DataFrame):
 def generate_url_for_files(dataframe: pd.DataFrame, column: str):
     if not dataframe[column].empty:
         dataframe[column] = dataframe.apply(
-            lambda x: f"""["Счет"]({get_invoice_url(x.id)["Счет"][0]})""" if x.invoice else "", axis=1
+            lambda x: (
+                f"""["Счет"]({get_invoice_url(x.id)["Счет"][0]})""" if x.invoice else ""
+            ),
+            axis=1,
         )
 
 
@@ -136,18 +143,27 @@ def generate_column(column: TableColumn) -> Dict:
             symbol=Symbol.yes,
             symbol_suffix=column.suffix,
         ),
-        "presentation": "markdown" if column.is_markdown or column.is_thumbnail else "input",
+        "presentation": (
+            "markdown" if column.is_markdown or column.is_thumbnail else "input"
+        ),
     }
 
 
 def generate_column_style(column: TableColumn) -> Dict:
-    return {"if": {"column_id": column.name}, "textAlign": column_text_align[column.type]}
+    return {
+        "if": {"column_id": column.name},
+        "textAlign": column_text_align[column.type],
+    }
 
 
 def generate_column_bars_style(dataframe: pd.DataFrame, column: str) -> List:
     n_bins = 100
     bounds = [i * (1.0 / n_bins) for i in range(n_bins + 1)]
-    ranges = [((dataframe[column].max() - dataframe[column].min()) * i) + dataframe[column].min() for i in bounds]
+    ranges = [
+        ((dataframe[column].max() - dataframe[column].min()) * i)
+        + dataframe[column].min()
+        for i in bounds
+    ]
     styles = []
     for i in range(1, len(bounds)):
         min_bound = ranges[i - 1]
@@ -158,7 +174,11 @@ def generate_column_bars_style(dataframe: pd.DataFrame, column: str) -> List:
                 "if": {
                     "filter_query": (
                         f"{{{column}}} >= {min_bound}"
-                        + (f" && {{{column}}} < {max_bound}" if (i < len(bounds) - 1) else "")
+                        + (
+                            f" && {{{column}}} < {max_bound}"
+                            if (i < len(bounds) - 1)
+                            else ""
+                        )
                     ),
                     "column_id": column,
                 },
@@ -185,14 +205,20 @@ def generate_columns_bars_styles(dataframe: pd.DataFrame, columns_names: list) -
     return styles
 
 
-def generate_row_highlighting_styles(columns: str, value: str, background_color: str = "#F5748E", color: str = "white"):
+def generate_row_highlighting_styles(
+    columns: str, value: str, background_color: str = "#F5748E", color: str = "white"
+):
     styles = []
     for column in columns:
-        styles.append(generate_row_highlighting_style(column, value, background_color, color))
+        styles.append(
+            generate_row_highlighting_style(column, value, background_color, color)
+        )
     return styles
 
 
-def generate_row_highlighting_style(column: str, value: str, background_color: str, color: str):
+def generate_row_highlighting_style(
+    column: str, value: str, background_color: str, color: str
+):
     return {
         "if": {"filter_query": f'{{{column}}} contains "{value}"'},
         "backgroundColor": background_color,
@@ -200,7 +226,9 @@ def generate_row_highlighting_style(column: str, value: str, background_color: s
     }
 
 
-def generate_cell_highlighting_style(column: str, value: str, background_color: str, color: str):
+def generate_cell_highlighting_style(
+    column: str, value: str, background_color: str, color: str
+):
     return {
         "if": {"filter_query": f'{{{column}}} contains "{value}"', "column_id": column},
         "backgroundColor": background_color,
@@ -208,7 +236,9 @@ def generate_cell_highlighting_style(column: str, value: str, background_color: 
     }
 
 
-def generate_row_fontweight_on_max_value_in_column(dataframe: pd.DataFrame, column: str, fontweight: str = "bold"):
+def generate_row_fontweight_on_max_value_in_column(
+    dataframe: pd.DataFrame, column: str, fontweight: str = "bold"
+):
     if column in dataframe.columns:
         return {
             "if": {"filter_query": f"{{{column}}} = {dataframe[column].max()}"},
@@ -222,6 +252,8 @@ def generate_tooltip_data(data: pd.DataFrame, columns: list, note: str) -> list:
     tooltips_data = []
     for column in columns:
         for _, row in data.iterrows():
-            tooltip_data = {column: {"value": f" Это {str(row[note])}", "type": "markdown"}}
+            tooltip_data = {
+                column: {"value": f" Это {str(row[note])}", "type": "markdown"}
+            }
             tooltips_data.append(tooltip_data)
     return tooltips_data

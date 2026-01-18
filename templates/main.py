@@ -5,7 +5,9 @@ import os
 import base64
 from dash.dependencies import Input, Output, State
 
-LOGO_IMAGE = base64.b64encode(open(os.path.join("static/logo.svg"), "rb").read()).decode()
+LOGO_IMAGE = base64.b64encode(
+    open(os.path.join("static/logo.svg"), "rb").read()
+).decode()
 
 
 def render(app):

@@ -18,7 +18,9 @@ from utils.user import User
 app.layout = templates.main.render(app)
 
 
-def get_page(pathname: str, pages_provider: utils.page.PageProvider = pages.pages_provider) -> Page:
+def get_page(
+    pathname: str, pages_provider: utils.page.PageProvider = pages.pages_provider
+) -> Page:
     """
     Функция убирает лишние слэши из пути, подменяет устаревшие ссылки на актуальные
     Отдает актуальную страницу пользователю
@@ -64,13 +66,21 @@ def render_page(page: Page, user: User) -> Union[html.Main, html.Div]:
 def display_page(_, pathname: str) -> (Union[html.Main, html.Div], bool):
     ctx.set_props(component_id="refresh-interval", props={"max_intervals": 0})
     page = get_page(pathname)
-    match [bool(page), page.is_archived() if page else False, os.environ.get("TECHNICAL_WORK_ENABLE") == "1"]:
+    match [
+        bool(page),
+        page.is_archived() if page else False,
+        os.environ.get("TECHNICAL_WORK_ENABLE") == "1",
+    ]:
         case [_, _, True]:
             page = get_page("technical_work")
         case [False, _, False]:
-            return templates.layout.render(templates.error.render(404, "Отчет не найден :("))
+            return templates.layout.render(
+                templates.error.render(404, "Отчет не найден :(")
+            )
         case [True, True, False]:
-            return templates.layout.render(templates.error.render(423, "Отчет перемещен в архив"))
+            return templates.layout.render(
+                templates.error.render(423, "Отчет перемещен в архив")
+            )
     user = AuthManager.identify(cookie=flask.request.cookies.get("dash_cookie"))
     if not AuthManager.authenticate(user=user):
         user.roles = {"GUEST"}

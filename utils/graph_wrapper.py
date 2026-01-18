@@ -23,7 +23,9 @@ def graph_wrapper(tags=None, is_export_button_hidden=True):
             graph = func(*args, **kwargs)
             match [len(graph.figure["data"]) == 0, is_export_button_hidden]:
                 case [True, _]:
-                    return templates.flash.render("", "По вашему запросу ничего не найдено")
+                    return templates.flash.render(
+                        "", "По вашему запросу ничего не найдено"
+                    )
                 case [False, True]:
                     return add_events(graph, tags)
                 case _:
@@ -35,7 +37,9 @@ def graph_wrapper(tags=None, is_export_button_hidden=True):
                             id={"type": "download_button", "index": unique_id},
                             n_clicks=0,
                         ),
-                        dcc.Download(id={"type": "download_export_xlsx", "index": unique_id}),
+                        dcc.Download(
+                            id={"type": "download_export_xlsx", "index": unique_id}
+                        ),
                         dcc.Store(
                             id={"type": "download_graph_store", "index": unique_id},
                             data=kwargs["data"].to_dict("records"),
@@ -61,7 +65,9 @@ def graph_wrapper_with_today_event(tags=None, is_export_button_hidden=True):
         def wrapper(*args, **kwargs):
             graph = func(*args, **kwargs)
             if isinstance(graph, dcc.Graph) and len(graph.figure["data"]) != 0:
-                graph.figure = add_event(graph.figure, date.today(), find_max_values(graph), "Мы тут")
+                graph.figure = add_event(
+                    graph.figure, date.today(), find_max_values(graph), "Мы тут"
+                )
             return graph
 
         return wrapper
@@ -110,10 +116,17 @@ def add_event(fig: go.Figure, x: str, y: int, text: str) -> go.Figure:
 def add_events(graph: dcc.Graph, tags: set) -> dcc.Graph:
     if tags and graph.figure["data"][0]["type"] == "scatter":
         events = queries.dash.timelines.events(
-            tags=list(tags), start_date=min(graph.figure["data"][0]["x"]), end_date=max(graph.figure["data"][0]["x"])
+            tags=list(tags),
+            start_date=min(graph.figure["data"][0]["x"]),
+            end_date=max(graph.figure["data"][0]["x"]),
         )
         for _, event in events.iterrows():
-            graph.figure = add_event(graph.figure, event["created_date"], find_max_values(graph), event["event"])
+            graph.figure = add_event(
+                graph.figure,
+                event["created_date"],
+                find_max_values(graph),
+                event["event"],
+            )
     return graph
 
 

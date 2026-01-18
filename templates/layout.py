@@ -1,14 +1,21 @@
 from dash import dcc, html
 import dash_bootstrap_components as dbc
 from natsort import humansorted
-from utils.page import pages_menu_condition, pages_menu_condition_with_subcategories, by_label_sort_key, generate_link
+from utils.page import (
+    pages_menu_condition,
+    pages_menu_condition_with_subcategories,
+    by_label_sort_key,
+    generate_link,
+)
 from utils.category import categories_list_condition
 import pages
 import os
 import base64
 from utils.user import User
 
-LOGO_IMAGE = base64.b64encode(open(os.path.join("static/logo.svg"), "rb").read()).decode()
+LOGO_IMAGE = base64.b64encode(
+    open(os.path.join("static/logo.svg"), "rb").read()
+).decode()
 
 
 def render(content, user: User | None = None):
@@ -19,9 +26,9 @@ def render(content, user: User | None = None):
             nav=True,
             align_end=True,
         )
-        for category in pages.categories_provider.filter(lambda c: categories_list_condition(c, user)).sort_natural(
-            by_label_sort_key
-        )
+        for category in pages.categories_provider.filter(
+            lambda c: categories_list_condition(c, user)
+        ).sort_natural(by_label_sort_key)
     ]
 
     layout = html.Div(
@@ -89,7 +96,11 @@ def render(content, user: User | None = None):
                     className="header-nav",
                 ),
             ),
-            html.Div(id="page-content", className="page-content container-layout container", children=content),
+            html.Div(
+                id="page-content",
+                className="page-content container-layout container",
+                children=content,
+            ),
             html.Footer(
                 [
                     html.Br(),
@@ -106,9 +117,9 @@ def render(content, user: User | None = None):
 def generate_menu(category) -> list:
     return [
         dbc.DropdownMenuItem(**generate_link(page=page))
-        for page in pages.pages_provider.filter(lambda p: pages_menu_condition(p, category.get_name())).sort_natural(
-            by_label_sort_key
-        )
+        for page in pages.pages_provider.filter(
+            lambda p: pages_menu_condition(p, category.get_name())
+        ).sort_natural(by_label_sort_key)
     ]
 
 
@@ -121,7 +132,9 @@ def generate_menu_with_subcategory(category) -> list:
                 dbc.DropdownMenuItem(**generate_link(page=page))
                 for page in pages.pages_provider.filter(
                     lambda p, subcategory=subcategory: pages_menu_condition_with_subcategories(
-                        page=p, category_name=category.get_name(), subcategory_name=subcategory
+                        page=p,
+                        category_name=category.get_name(),
+                        subcategory_name=subcategory,
                     )
                 ).sort_natural(by_label_sort_key)
             ]

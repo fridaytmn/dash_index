@@ -71,7 +71,10 @@ def get_reports(
         case None:
             founded_ids = None
         case _:
-            founded_ids = pages.search("".join(filter(is_character_non_special, search_string)), field_sorted_by)
+            founded_ids = pages.search(
+                "".join(filter(is_character_non_special, search_string)),
+                field_sorted_by,
+            )
             sort_key_func = by_search_order_sort_key(founded_ids)
             is_sort_reverse = False
 
@@ -80,7 +83,10 @@ def get_reports(
     ).sort_natural(key_func=sort_key_func, reverse=is_sort_reverse)
     if query_string == "" or query_string == "?search=":
         return render_catalog(), {"border": "0px", "display": "none"}
-    return render_search_result(pages_sorted=pages_sorted), {"border": "0px", "display": True}
+    return render_search_result(pages_sorted=pages_sorted), {
+        "border": "0px",
+        "display": True,
+    }
 
 
 def render_search_result(pages_sorted: list) -> list:
@@ -116,16 +122,18 @@ def render_catalog() -> list:
                             [
                                 dbc.ListGroupItem(**generate_link(page=page))
                                 for page in pages.pages_provider.filter(
-                                    lambda p: pages_menu_condition(p, category.get_name())  # noqa: B023
+                                    lambda p: pages_menu_condition(
+                                        p, category.get_name()  # noqa: B023
+                                    )
                                 ).sort_natural(by_label_sort_key)
                             ],
                             flush=True,
                         ),
                     ]
                 )
-                for category in pages.categories_provider.filter(lambda c: categories_list_condition(c)).sort_natural(
-                    by_label_sort_key
-                )
+                for category in pages.categories_provider.filter(
+                    lambda c: categories_list_condition(c)
+                ).sort_natural(by_label_sort_key)
             ],
         )
     ]

@@ -49,7 +49,9 @@ def create_categories_provider(path) -> CategoryProvider:
 def create_category(path: Path) -> Category:
     module = importlib.import_module(get_module_name(path))
     name = path.parent.name
-    subcategories = [x.name for x in path.parent.iterdir() if x.is_dir() and x.name != "__pycache__"]
+    subcategories = [
+        x.name for x in path.parent.iterdir() if x.is_dir() and x.name != "__pycache__"
+    ]
 
     return Category(module, name, subcategories)
 
@@ -61,7 +63,10 @@ def categories_list_condition(category: Category, user: User | None = None) -> b
         if (
             not category.is_hidden()
             and category.get_allowed_groups()
-            and (not category.get_allowed_groups().isdisjoint(user.roles) or user.username in utils.allowed_users)
+            and (
+                not category.get_allowed_groups().isdisjoint(user.roles)
+                or user.username in utils.allowed_users
+            )
         ):
             return True
     return False

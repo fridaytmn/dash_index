@@ -54,7 +54,9 @@ def get_is_triggered(input_id: str) -> bool:
 
 
 def set_timezone(dataframe: pd.DataFrame) -> pd.DataFrame:
-    datetime_with_tz = list(dataframe.select_dtypes(include=["datetime64[ns, UTC]"]).columns)
+    datetime_with_tz = list(
+        dataframe.select_dtypes(include=["datetime64[ns, UTC]"]).columns
+    )
     datetime_without_tz = list(dataframe.select_dtypes(include=["<M8[ns]"]).columns)
     for column in datetime_with_tz:
         dataframe[column] = dataframe[column].dt.tz_convert(tz="Asia/Yekaterinburg")
@@ -66,7 +68,12 @@ def set_timezone(dataframe: pd.DataFrame) -> pd.DataFrame:
 def to_pivot(dataframe: pd.DataFrame, shape: tuple) -> np.array:
     if dataframe.empty:
         return dataframe
-    return np.vstack((np.reshape(pd.DataFrame(dataframe).columns.values, shape), pd.DataFrame(dataframe).to_numpy()))
+    return np.vstack(
+        (
+            np.reshape(pd.DataFrame(dataframe).columns.values, shape),
+            pd.DataFrame(dataframe).to_numpy(),
+        )
+    )
 
 
 def load_from_pickle_file(file_path: str, default: any = None) -> dict | list[str]:

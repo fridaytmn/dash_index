@@ -40,7 +40,9 @@ class AuthManager:
     def authorize(cls, page: Page, user: User) -> bool:
         if page.get_allowed_users() and user.username not in page.get_allowed_users():
             return False
-        if not page.get_allowed_roles() or not page.get_allowed_roles().isdisjoint(user.roles):
+        if not page.get_allowed_roles() or not page.get_allowed_roles().isdisjoint(
+            user.roles
+        ):
             return True
         return False
 
@@ -57,4 +59,6 @@ class AuthManager:
 
     @classmethod
     def set_cookie(cls, cookie: str) -> None:
-        callback_context.response.set_cookie("dash_cookie", cookie, max_age=DATETIME_2_MONTHS)
+        callback_context.response.set_cookie(
+            "dash_cookie", cookie, max_age=DATETIME_2_MONTHS
+        )
