@@ -10,7 +10,7 @@ import dash_mantine_components as dmc
 _dash_renderer._set_react_version("18.2.0")
 
 label = "Маркировка инструмента"
-allowed_roles = {"ADMIN"}
+allowed_roles = {"MARKER"}
 
 
 def get_content() -> list:
