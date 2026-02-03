@@ -5,14 +5,11 @@ from utils.excel_processing import (
     update_cell_by_value,
     get_value_by_location,
 )
-from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-from dash import html, dash_table, dcc
-import utils.table_format
+from dash import html, dcc, ctx
 import pandas as pd
 from app import app
-import utils.user
 
 
 label = "Оприходование наклеек"
@@ -51,12 +48,36 @@ def get_content() -> list:
                     ),
                     dbc.Col(
                         [
+                            html.Label("Расход за весь период, шт.", style={}),
+                            dbc.Input(
+                                id="manager_input_sticker_expense_count",
+                                disabled=True,
+                                type="text",
+                                value="",
+                                style={"min-width": "100px", "display": "flex"},
+                            ),
+                        ],
+                    ),
+                    dbc.Col(
+                        [
+                            html.Label("На складе, шт.", style={}),
+                            dbc.Input(
+                                id="manager_input_sticker_storage",
+                                disabled=True,
+                                type="text",
+                                value="",
+                                style={"min-width": "100px", "display": "flex"},
+                            ),
+                        ],
+                    ),
+                    dbc.Col(
+                        [
                             html.Label("Кол-во наклеек*", style={}),
                             dbc.Input(
                                 id="manager_input_sticker_count",
                                 type="text",
-                                value="",
-                                style={"min-width": "120px", "display": "flex"},
+                                value="0",
+                                style={"min-width": "100px", "display": "flex"},
                             ),
                         ],
                     ),
@@ -66,17 +87,26 @@ def get_content() -> list:
                             dbc.Input(
                                 id="manager_input_sticker_cell",
                                 type="text",
-                                value="",
-                                style={"min-width": "120px", "display": "flex"},
+                                value="0",
+                                style={"min-width": "100px", "display": "flex"},
                             ),
                         ],
                     ),
                     dbc.Col(
                         dbc.Button(
-                            id="manager_update_sticker",
+                            id="manager_add_sticker",
                             n_clicks=0,
-                            children="Обновить",
+                            children="Добавить",
                             style={"margin-top": "5px", "background-color": "#acd180"},
+                        ),
+                        width=4,
+                    ),
+                    dbc.Col(
+                        dbc.Button(
+                            id="manager_remove_sticker",
+                            n_clicks=0,
+                            children="Убрать",
+                            style={"margin-top": "5px", "background-color": "#fa0234"},
                         ),
                         width=4,
                     ),
@@ -90,13 +120,20 @@ def get_content() -> list:
 
 @app.callback(
     Output(component_id="save_new_storage_sticker", component_property="children"),
-    Input(component_id="manager_update_sticker", component_property="n_clicks"),
+    Input(component_id="manager_add_sticker", component_property="n_clicks"),
+    Input(component_id="manager_remove_sticker", component_property="n_clicks"),
+    State(
+        component_id="manager_input_sticker_expense_count", component_property="value"
+    ),
+    State(component_id="manager_input_sticker_storage", component_property="value"),
     State(component_id="manager_input_sticker", component_property="value"),
     State(component_id="manager_input_sticker_count", component_property="value"),
     State(component_id="manager_input_sticker_cell", component_property="value"),
     prevent_initial_call=True,
 )
-def update(_, sticker, count, cell):
+def update(  # noqa C901
+    btn_add, btn_remove, expense_count, storage, sticker, count, cell
+):
     if "" in {sticker, count}:
         return templates.flash.render("", "Необходимо заполнить все обязательные поля")
 
@@ -104,28 +141,36 @@ def update(_, sticker, count, cell):
         filename=FILE_PATH, search_value=sticker, number_column=11
     )
 
+    if ctx.triggered_id == "manager_remove_sticker":
+        expense_count = int(expense_count) + int(count)
+        storage = int(storage) - int(count)
+    else:
+        storage = int(storage) + int(count)
+
     if count and (
         cell
-        != get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 2)
+        != get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 3)
     ):
-        values = [str(count), cell]
+        values = [str(storage), str(expense_count), cell]
     else:
         values = [
-            str(count),
-            get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 2),
+            str(storage),
+            str(expense_count),
+            get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 3),
         ]
 
     if update_cell_by_value(
         filename=FILE_PATH,
         row=location[0],
-        columns=[location[1] + 1, location[1] + 2],
+        columns=[location[1] + 1, location[1] + 2, location[1] + 3],
         values=values,
     ):
         return templates.flash.render(
             "",
             f"Количество для {sticker} было обновлено, "
-            f"текущее количество - '{count}', ячейка - '{cell if cell else "Не указана"}'",
-            color="#acd180",
+            f"текущее количество - '{get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 1)}',"
+            f"ячейка - '{cell if cell else "Не указана"}'",
+            color="#acd180" if ctx.triggered_id == "manager_add_sticker" else "#fa0234",
         )
 
     return templates.flash.render(
@@ -133,21 +178,11 @@ def update(_, sticker, count, cell):
     )
 
 
-@table_wrapper()
-def get_table(data: pd.DataFrame) -> dash_table.DataTable:
-    columns, styles = utils.table_format.generate(data)
-    return dash_table.DataTable(
-        id="manager_orders_table",
-        columns=columns,
-        style_cell_conditional=styles,
-        page_size=50,
-        sort_action="custom",
-        sort_by=[],
-        data=data.to_dict("records"),
-    )
-
-
 @app.callback(
+    Output(
+        component_id="manager_input_sticker_expense_count", component_property="value"
+    ),
+    Output(component_id="manager_input_sticker_storage", component_property="value"),
     Output(component_id="manager_input_sticker_count", component_property="value"),
     Output(component_id="manager_input_sticker_cell", component_property="value"),
     Output(
@@ -164,8 +199,10 @@ def get_value_to_cell(sticker):
     )
     if location:
         return [
-            get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 1),
             get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 2),
-            [],
+            get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 1),
+            0,
+            get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 3),
+            None,
         ]
-    return None, None, None
+    return None, None, None, None, None

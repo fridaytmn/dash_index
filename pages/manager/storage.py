@@ -2,6 +2,7 @@ from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 from dash import html, dash_table
 import pandas as pd
+import os
 
 from utils.table_wrapper import table_wrapper
 import utils.table_format
@@ -14,6 +15,8 @@ note = """
 В отчете отображается складские остатки.
 """
 
+PATH_FILE = os.environ.get("PATH_FILE")
+
 
 def get_content() -> list:
     return [
@@ -25,8 +28,9 @@ def get_content() -> list:
                             id="get_storage",
                             n_clicks=0,
                             children="Показать остатки",
+                            style={"min-width": "160px"},
                         ),
-                        width=2,
+                        width=3,
                     ),
                 ],
             ),
@@ -42,7 +46,7 @@ def get_content() -> list:
     prevent_initial_call=True,
 )
 def update(_):
-    data = pd.read_excel("C:\\files\\reestr\\Nomenclature.xlsx")
+    data = pd.read_excel(PATH_FILE)
     result = (
         data.iloc[:, [5, 6, 8, 9]]
         .dropna(subset=["Склад Мск, шт.", "Склад Тмн, шт."], how="all")

@@ -29,3 +29,8 @@ UNITED = _BOOTSWATCH_BASE + "united/bootstrap.min.css"
 VAPOR = _BOOTSWATCH_BASE + "vapor/bootstrap.min.css"
 YETI = _BOOTSWATCH_BASE + "yeti/bootstrap.min.css"
 ZEPHYR = _BOOTSWATCH_BASE + "zephyr/bootstrap.min.css"
+
+MANTINE_DATES_PROVIDER = [
+    "https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.8/dayjs.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.8/locale/ru.min.js",
+]

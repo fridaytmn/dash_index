@@ -13,3 +13,5 @@ user_log_pass.py
 /~$Nomenclature.xlsx
 *.xml
 *.iml
+*.pyc
+__pycache__

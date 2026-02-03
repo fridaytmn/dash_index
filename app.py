@@ -4,11 +4,14 @@ import utils.styles.themes
 import utils.styles.icons
 from pydantic import ValidationError
 from dash.dependencies import Input, Output
+import templates
 
 
 app = dash.Dash(
     __name__,
     external_stylesheets=[utils.styles.themes.BOOTSTRAP, utils.styles.icons.BOOTSTRAP],
+    external_scripts=[*utils.styles.themes.MANTINE_DATES_PROVIDER],
+    index_string=templates.INDEX_STRING,
 )
 app.config["suppress_callback_exceptions"] = True
 app.logger.propagate = False

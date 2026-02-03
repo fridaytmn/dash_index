@@ -57,6 +57,7 @@ def table_wrapper(columns=None):
                             ),
                         ],
                         color="secondary",
+                        style={"margin-bottom": 10},
                     ),
                     dcc.Download(id={"type": "export_xlsx", "index": unique_id}),
                     dcc.Store(

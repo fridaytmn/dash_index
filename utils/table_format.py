@@ -32,6 +32,7 @@ group_type = {
     "datetime64[s]": "",
     "object": "",
     "bool": "",
+    "str": "",
     "datetime64[ns, UTC]": "",
     "datetime64[ns, Asia/Yekaterinburg]": "",
 }
@@ -48,6 +49,7 @@ column_type = {
     "datetime64[ns]": "datetime",
     "datetime64[s]": "datetime",
     "object": "text",
+    "str": "text",
     "bool": "any",
     "datetime64[ns, UTC]": "datetime",
     "datetime64[ns, Asia/Yekaterinburg]": "datetime",
@@ -66,6 +68,7 @@ column_text_align = {
     "datetime64[s]": "right",
     "object": "left",
     "bool": "left",
+    "str": "left",
     "datetime64[ns, UTC]": "right",
     "datetime64[ns, Asia/Yekaterinburg]": "right",
 }

@@ -8,11 +8,14 @@ from utils.excel_processing import (
 from utils.table_wrapper import table_wrapper
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-from dash import html, dash_table, dcc
+from dash import html, dash_table, _dash_renderer
 import utils.table_format
 import pandas as pd
 from app import app
 import utils.user
+import dash_mantine_components as dmc
+
+_dash_renderer._set_react_version("18.2.0")
 
 
 label = "Заказ наклеек"
@@ -24,72 +27,72 @@ note = """
 
 def get_content() -> list:
     return [
-        html.Div(
-            dbc.Row(
-                [
-                    dbc.Col(
+        dmc.MantineProvider(
+            children=[
+                html.Div(
+                    dbc.Row(
                         [
-                            html.Label(
-                                html.Span("Наименование"),
-                                className="period-title",
+                            dbc.Col(
+                                [
+                                    html.Label(
+                                        html.Span("Наименование"),
+                                        className="period-title",
+                                    ),
+                                    dmc.MultiSelect(
+                                        id="manager_order_sticker",
+                                        data=pd.read_excel(FILE_PATH)
+                                        .iloc[:, 11]
+                                        .dropna()
+                                        .fillna("")
+                                        .unique(),
+                                        placeholder="Выберите Наклейку",
+                                        searchable=True,
+                                        clearable=True,
+                                        w="320px",
+                                    ),
+                                ],
                             ),
-                            dcc.Dropdown(
-                                id="manager_order_sticker",
-                                options=pd.read_excel(FILE_PATH)
-                                .iloc[:, 11]
-                                .dropna()
-                                .fillna("")
-                                .unique(),
-                                value="",
-                                placeholder="Выберите Наклейку",
-                                searchable=True,
-                                clearable=False,
-                                multi=True,
-                                style={
-                                    "min-width": "520px",
-                                    "width": "520px",
-                                    "min-height": "300px",
-                                    "display": "flex",
-                                },
+                            dbc.Col(
+                                [
+                                    html.Label("Кол-во наклеек*", style={}),
+                                    dbc.Input(
+                                        id="manager_order_sticker_count",
+                                        type="text",
+                                        value="",
+                                        style={"min-width": "120px", "display": "flex"},
+                                    ),
+                                ],
                             ),
-                        ],
-                    ),
-                    dbc.Col(
-                        [
-                            html.Label("Кол-во наклеек*", style={}),
-                            dbc.Input(
-                                id="manager_order_sticker_count",
-                                type="text",
-                                value="",
-                                style={"min-width": "120px", "display": "flex"},
+                            dbc.Col(
+                                [
+                                    html.Label("Номер ячейки", style={}),
+                                    dbc.Input(
+                                        id="manager_order_sticker_cell",
+                                        type="text",
+                                        value="",
+                                        style={"min-width": "120px", "display": "flex"},
+                                    ),
+                                ],
                             ),
-                        ],
-                    ),
-                    dbc.Col(
-                        [
-                            html.Label("Номер ячейки", style={}),
-                            dbc.Input(
-                                id="manager_order_sticker_cell",
-                                type="text",
-                                value="",
-                                style={"min-width": "120px", "display": "flex"},
+                            dbc.Col(
+                                dbc.Button(
+                                    id="manager_update_sticker",
+                                    n_clicks=0,
+                                    children="Обновить",
+                                    style={
+                                        "margin-top": "5px",
+                                        "background-color": "#acd180",
+                                    },
+                                ),
+                                width=4,
                             ),
-                        ],
+                        ]
                     ),
-                    dbc.Col(
-                        dbc.Button(
-                            id="manager_update_sticker",
-                            n_clicks=0,
-                            children="Обновить",
-                            style={"margin-top": "5px", "background-color": "#acd180"},
-                        ),
-                        width=4,
-                    ),
-                ]
-            ),
-            className="form-inline-wrapper",
-        ),
-        html.Div(id="save_new_storage_sticker"),
+                    className="form-inline-wrapper",
+                ),
+                html.Div(id="save_new_storage_sticker"),
+            ]
+        )
     ]
 
 

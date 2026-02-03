@@ -67,7 +67,7 @@ def convert_to_xlsx(
                 dataframe = pd.DataFrame(dataframe)
                 dataframe.to_excel(
                     writer,
-                    sheet_names[row][:SPREADSHEET_LIST_NAME_LENGTH_MAX],
+                    sheet_name=sheet_names[row][:SPREADSHEET_LIST_NAME_LENGTH_MAX],
                     index=index,
                 )
                 if (
