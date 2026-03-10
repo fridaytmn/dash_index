@@ -63,6 +63,18 @@ def get_content() -> list:
                                 ]
                             ),
                             dbc.Col(
+                                [
+                                    html.Label("На складе, шт.", style={}),
+                                    dbc.Input(
+                                        id="manager_order_sticker_storage",
+                                        disabled=True,
+                                        type="text",
+                                        value="",
+                                        style={"min-width": "100px", "display": "flex"},
+                                    ),
+                                ],
+                            ),
+                            dbc.Col(
                                 dbc.Button(
                                     "Добавить в список",
                                     id="manager_update_sticker_add",
@@ -89,21 +101,25 @@ def get_content() -> list:
 
 @app.callback(
     Output("manager_order_sticker_expense_count", "value"),
+    Output("manager_order_sticker_storage", "value"),
     Input("manager_order_sticker", "value"),
     prevent_initial_call=True,
 )
 def fill_expense(sticker):
     if not sticker:
-        return ""
+        return "", ""
 
     location = find_cell_by_value(
         filename=FILE_PATH, search_value=sticker, number_column=5
     )
 
     if not location:
-        return ""
+        return "", ""
 
-    return get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 8)
+    return [
+        get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 8),
+        get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 7),
+    ]
 
 
 @app.callback(
@@ -114,10 +130,11 @@ def fill_expense(sticker):
     State("manager_order_sticker", "value"),
     State("manager_order_sticker_expense_count", "value"),
     State("manager_order_sticker_count", "value"),
+    State("manager_order_sticker_storage", "value"),
     State("manager_order_sticker_table_store", "data"),
     prevent_initial_call=True,
 )
-def add_sticker(_, sticker, expense, count, stored):  # noqa C901
+def add_sticker(_, sticker, expense, count, count_storage, stored):  # noqa C901
     stored = list(stored or [])
 
     if not sticker or count is None:
@@ -130,6 +147,7 @@ def add_sticker(_, sticker, expense, count, stored):  # noqa C901
     try:
         count = int(count)
         expense = int(expense or 0)
+        count_storage = int(count_storage or 0)
     except ValueError:
         return (
             stored,
@@ -148,6 +166,7 @@ def add_sticker(_, sticker, expense, count, stored):  # noqa C901
         "Наименование": sticker,
         "Расход за весь период, шт": expense,
         "Кол-во по заказу, шт": count,
+        "На складе, шт.": count_storage,
         "Доп на склад, шт": 0,
         "Всего к заказу, шт": count,
     }

@@ -120,6 +120,16 @@ def get_content() -> list:
 
 @app.callback(
     Output(component_id="save_new_storage_sticker", component_property="children"),
+    Output(
+        component_id="manager_input_sticker_storage",
+        component_property="value",
+        allow_duplicate=True,
+    ),
+    Output(
+        component_id="manager_input_sticker_expense_count",
+        component_property="value",
+        allow_duplicate=True,
+    ),
     Input(component_id="manager_add_sticker", component_property="n_clicks"),
     Input(component_id="manager_remove_sticker", component_property="n_clicks"),
     State(
@@ -147,17 +157,8 @@ def update(  # noqa C901
     else:
         storage = int(storage) + int(count)
 
-    if count and (
-        cell
-        != get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 3)
-    ):
+    if count or cell:
         values = [str(storage), str(expense_count), cell]
-    else:
-        values = [
-            str(storage),
-            str(expense_count),
-            get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 3),
-        ]
 
     if update_cell_by_value(
         filename=FILE_PATH,
@@ -165,13 +166,21 @@ def update(  # noqa C901
         columns=[location[1] + 1, location[1] + 2, location[1] + 3],
         values=values,
     ):
-        return templates.flash.render(
-            "",
-            f"Количество для {sticker} было обновлено, "
-            f"текущее количество - '{get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 1)}',"
-            f"ячейка - '{cell if cell else "Не указана"}'",
-            color="#acd180" if ctx.triggered_id == "manager_add_sticker" else "#fa0234",
-        )
+        return [
+            templates.flash.render(
+                "",
+                f"Количество для {sticker} было обновлено, "
+                f"текущее количество - '{get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 1)}', "
+                f"ячейка - '{cell if cell else "Не указана"}'",
+                color=(
+                    "#acd180"
+                    if ctx.triggered_id == "manager_add_sticker"
+                    else "#fa0234"
+                ),
+            ),
+            get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 1),
+            get_value_by_location(FILE_PATH, row=location[0], column=location[1] + 2),
+        ]
 
     return templates.flash.render(
         "", "Произошла ошибка при обновлении данных", color="danger"
