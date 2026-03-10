@@ -274,7 +274,7 @@ def get_value_to_cell(sticker):
 )
 def find_in_cell(_, number_cell):
     location = find_cell_by_value(
-        filename=FILE_PATH, search_value=number_cell, number_column=14
+        filename=FILE_PATH, search_value=str(number_cell), number_column=14
     )
     if location:
         return templates.flash.render(
