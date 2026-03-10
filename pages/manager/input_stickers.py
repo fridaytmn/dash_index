@@ -115,6 +115,55 @@ def get_content() -> list:
             className="form-inline-wrapper",
         ),
         html.Div(id="save_new_storage_sticker"),
+        html.Div(
+            dbc.Row(
+                [
+                    dbc.Col(
+                        [
+                            html.Label(
+                                html.Span("Наклейка в ячейке"),
+                                className="period-title",
+                            ),
+                            dcc.Dropdown(
+                                id="manager_find_sticker",
+                                options=sorted(
+                                    pd.read_excel(FILE_PATH)
+                                    .iloc[:, 14]
+                                    .dropna()
+                                    .fillna("")
+                                    .unique()
+                                ),
+                                value="",
+                                multi=False,
+                                placeholder="Что за наклейка",
+                                searchable=True,
+                                clearable=False,
+                                style={
+                                    "min-width": "120px",
+                                    "max-width": "200px",
+                                    "display": "flex",
+                                },
+                            ),
+                        ]
+                    ),
+                    dbc.Col(
+                        dbc.Button(
+                            id="manager_find_in_cell",
+                            n_clicks=0,
+                            children="Что в ячейке",
+                            style={
+                                "margin-top": "20px",
+                                "margin-right": "500px",
+                                "background-color": "#6483fe",
+                            },
+                        ),
+                        width=10,
+                    ),
+                ]
+            )
+        ),
+        html.Br(),
+        html.Div(id="found_sticker_in_cell"),
     ]
 
 
@@ -215,3 +264,26 @@ def get_value_to_cell(sticker):
             None,
         ]
     return None, None, None, None, None
+
+
+@app.callback(
+    Output("found_sticker_in_cell", "children"),
+    Input("manager_find_in_cell", "n_clicks"),
+    State("manager_find_sticker", "value"),
+    prevent_initial_call=True,
+)
+def find_in_cell(_, number_cell):
+    location = find_cell_by_value(
+        filename=FILE_PATH, search_value=number_cell, number_column=14
+    )
+    if location:
+        return templates.flash.render(
+            title="Найдено",
+            text=get_value_by_location(
+                FILE_PATH, row=location[0], column=location[1] - 3
+            ),
+            color="#bcf0cd",
+        )
+    return templates.flash.render(
+        title="Не найдено", text="Ничего не найдено", color="danger"
+    )
