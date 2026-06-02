@@ -68,47 +68,6 @@ VALIDATION_START_SLASH_OR_PERCENT = (
     r"^[\/*]|[%*]"  # правило валидации: строка со слеша или процента
 )
 
-TYPE_ORDER_ID = generate_annotated(
-    types=str | None,
-    validation_rule=rf"^{VALIDATION_RULE_DIGIT}{string_length_gap(2, 8)}{VALIDATION_RULE_END_LINE}",
-)  # аннотация для поля id заказа
-TYPE_DIGITS_STRING_OR_EMPTY = generate_annotated(
-    types=str,
-    validation_rule=rf"{VALIDATION_RULE_DIGITS_WITH_SPACES}|{VALIDATION_RULE_EMPTY}",
-)  # аннотация для поля sids товара или пустая строка
-TYPE_BARCODE_IDS_STRING_OR_EMPTY = generate_annotated(
-    types=str, validation_rule=VALIDATION_RULE_BARCODE_IDS_STRING_OR_EMPTY
-)  # аннотация для поля barcode_ids
-TYPE_BARCODE_ID = generate_annotated(
-    types=str,
-    validation_rule=rf"{VALIDATION_RULE_DIGIT}{string_length_gap(1, 25)}{VALIDATION_RULE_END_LINE}",
-)  # аннотация типа barcode_id
-TYPE_PROMOTION_CODE_ID = generate_annotated(
-    types=str | None,
-    validation_rule=rf"^{VALIDATION_RULE_DIGIT}{'{9}'}{VALIDATION_RULE_END_LINE}",
-)  # аннотация для поля id акции
-TYPE_SITE_SIDS = generate_annotated(
-    types=str,
-    validation_rule=rf"^{VALIDATION_RULE_INT32_WITH_SPACES}|{VALIDATION_RULE_EMPTY}$",
-)  # аннотация для поля sids товара
-TYPE_BANNER_ID = generate_annotated(
-    types=str | None,
-    validation_rule=rf"^{VALIDATION_RULE_DIGIT}{string_length_gap(1, 6)}{VALIDATION_RULE_END_LINE}",
-)  # аннотация для поля id баннера
-TYPE_ID_QUERY_PATTERN = generate_annotated(
-    types=str,
-    validation_rule=rf"^{VALIDATION_RULE_ANY_SYMBOL}{'{3,}'}{VALIDATION_RULE_END_LINE}",
-)  # аннотация для поля паттерна поискового запроса
-TYPE_NOT_EMPTY_LINE = generate_annotated(
-    types=str, validation_rule=rf"{VALIDATION_NOT_EMPTY_LINE}"
-)  # аннотация для пустого поля
-TYPE_START_WITH_SLASH = generate_annotated(
-    types=str, validation_rule=rf"{VALIDATION_START_WITH_SLASH}"
-)  # аннотация для поля начинающего со слеша
-TYPE_START_SLASH_OR_PERCENT = generate_annotated(
-    types=str, validation_rule=rf"{VALIDATION_START_SLASH_OR_PERCENT}"
-)  # аннотация для поля начинающего со слеша или знака процента
-
 
 def between(
     start_date: Union[str, datetime], end_date: Union[str, datetime], period: int
