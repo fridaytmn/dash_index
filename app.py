@@ -4,6 +4,7 @@ import utils.styles.themes
 import utils.styles.icons
 from pydantic import ValidationError
 from dash.dependencies import Input, Output
+from prometheus_flask_exporter import PrometheusMetrics
 import templates
 
 
@@ -19,6 +20,7 @@ json_logging.init_flask(enable_json=True)
 json_logging.init_request_instrument(
     app.server, exclude_url_patterns=[r"/exclude_from_request_instrumentation"]
 )
+metrics = PrometheusMetrics(app.server)
 
 
 @app.server.errorhandler(500)

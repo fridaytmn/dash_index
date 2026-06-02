@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  postgres-primary:
+    image: postgres:15
+    environment:
+      - POSTGRESQL_POSTGRES_PASSWORD=postgres
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=postgres
+
+      - REPMGR_PASSWORD=repmgrpass
+      - REPMGR_PRIMARY_ROLE_WAIT=1
+      - REPMGR_NODE_NAME=postgres-primary
+      - REPMGR_NODE_NETWORK_NAME=postgres-primary
+      - REPMGR_PRIMARY_HOST=postgres-primary
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    volumes:
+      - D:/friday/index/postgres-primary:/bitnami/postgresql
+
+  postgres-replica:
+    image: postgres:15
+    depends_on:
+      - postgres-primary
+    environment:
+      - POSTGRESQL_POSTGRES_PASSWORD=postgres
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=postgres
+
+      - REPMGR_PASSWORD=repmgrpass
+      - REPMGR_NODE_NAME=postgres-replica
+      - REPMGR_NODE_NETWORK_NAME=postgres-replica
+      - REPMGR_PRIMARY_HOST=postgres-primary
+    restart: unless-stopped
+    volumes:
+      - D:/friday/index/postgres-replica:/bitnami/postgresql
