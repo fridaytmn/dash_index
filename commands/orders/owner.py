@@ -13,6 +13,12 @@ def create_new_customer(
 
 
 @command(connector)
+def insert_new_order(order_id: int) -> str:
+    """Перенос новой заявки в таблицу Owner"""
+    return f"""INSERT INTO public.owner_orders (order_id) VALUES ({order_id})"""
+
+
+@command(connector)
 def create_new_seller(
     seller_name: str, seller_inn: str, email=None, phone_number=None
 ) -> str:
@@ -23,6 +29,23 @@ def create_new_seller(
 
 
 @command(connector)
-def insert_new_order(order_id: int) -> str:
-    """Перенос новой заявки в таблицу Owner"""
-    return f"""INSERT INTO public.owner_orders (order_id) VALUES ({order_id})"""
+def update_seller(
+    seller_id: int,
+    seller_name: str,
+    seller_inn: str,
+    email=None,
+    phone_number=None,
+) -> str:
+    """Обновление данных поставщика по идентификатору"""
+    return f"""UPDATE public.sellers
+    SET seller_name = '{seller_name}',
+        seller_inn = '{seller_inn}',
+        email = '{email}',
+        phone_number = '{phone_number}'
+    WHERE seller_id = {seller_id}"""
+
+
+@command(connector)
+def delete_seller(seller_id: int) -> str:
+    """Удаление поставщика по идентификатору"""
+    return f"DELETE FROM public.sellers WHERE seller_id = {seller_id}"

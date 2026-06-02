@@ -17,6 +17,7 @@ note = """
 """
 
 allowed_roles = {"ADMIN", "OWNER"}
+is_hidden = True
 
 
 def get_content() -> list:

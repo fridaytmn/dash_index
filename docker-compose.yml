@@ -9,4 +9,7 @@ services:
       - POSTGRES_DB=postgres
     ports:
       - '5432:5432'
+    restart: unless-stopped
     network_mode: bridge
+    volumes:
+      - ${PGDATA_PATH}:/var/lib/postgresql/data
