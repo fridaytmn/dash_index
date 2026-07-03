@@ -1,8 +1,10 @@
+import base64
+import os
+
 from dash import dcc, html
 import dash_bootstrap_components as dbc
 from natsort import humansorted
 
-from templates import LOGO_IMAGE
 from utils.page import (
     pages_menu_condition,
     pages_menu_condition_with_subcategories,
@@ -12,6 +14,10 @@ from utils.page import (
 from utils.category import categories_list_condition
 import pages
 from utils.user import User
+
+LOGO_IMAGE = base64.b64encode(
+    open(os.path.join("static/logo.svg"), "rb").read()
+).decode()
 
 
 def render(content, user: User | None = None):

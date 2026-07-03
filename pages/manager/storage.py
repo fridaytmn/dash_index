@@ -15,7 +15,7 @@ note = """
 В отчете отображается складские остатки.
 """
 
-PATH_FILE = os.environ.get("PATH_FILE")
+STORE_PATH = os.environ.get("STORE_PATH")
 
 
 def get_content() -> list:
@@ -46,14 +46,8 @@ def get_content() -> list:
     prevent_initial_call=True,
 )
 def update(_):
-    data = pd.read_excel(PATH_FILE)
-    result = (
-        data.iloc[:, [5, 6, 8, 9]]
-        .dropna(subset=["Склад Мск, шт.", "Склад Тмн, шт."], how="all")
-        .fillna(0)
-    )
-    result["Итого"] = result["Склад Мск, шт."] + result["Склад Тмн, шт."]
-    return get_table(result)
+    data = pd.read_excel(STORE_PATH)
+    return get_table(data)
 
 
 @table_wrapper()
